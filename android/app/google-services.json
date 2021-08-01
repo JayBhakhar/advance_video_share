@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "362982212385",
+    "project_id": "advance-video-share",
+    "storage_bucket": "advance-video-share.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:362982212385:android:00597740edec0544093460",
+        "android_client_info": {
+          "package_name": "com.cropvideo.advance_video_share"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "362982212385-5a3ff6i6r93u956cv94g8ps9bef2bvma.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyS52Yhlmg0_2FICfc0qBDZeAm5PlHAT4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "362982212385-5a3ff6i6r93u956cv94g8ps9bef2bvma.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
