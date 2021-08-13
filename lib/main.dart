@@ -1,12 +1,7 @@
-import 'package:advance_video_share/unit_test.dart';
-import 'package:advance_video_share/views/pages/home_page.dart';
+import 'package:advance_video_share/views/pages/splash_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 
-
-void main() async{
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+void main() {
   runApp(MyApp());
 }
 
@@ -14,10 +9,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        textTheme: TextTheme(
+          bodyText1: TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
       title: 'Advance Video Share',
-      home: Test(),
-      // home: HomePage(), //Home page
+      home: SplashScreen(), //Splash Screen
     );
   }
 }
-
