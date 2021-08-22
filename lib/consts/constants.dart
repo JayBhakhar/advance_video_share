@@ -1,0 +1,1 @@
+const apiBaseURL = 'http://alakshyatechno.tech/subcategorylist';
