@@ -1,3 +1,4 @@
+import 'package:advance_video_share/unit_test.dart';
 import 'package:advance_video_share/views/pages/splash_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -20,6 +21,7 @@ class MyApp extends StatelessWidget {
       ),
       title: 'Advance Video Share',
       home: SplashScreen(), //Splash Screen
+      // home: UnitTest(), //Splash Screen
     );
   }
 }
