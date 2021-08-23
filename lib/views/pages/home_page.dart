@@ -127,7 +127,8 @@ class _HomePageState extends State<HomePage> {
                     child: Container(
                       height: 200,
                       width: 140,
-                      child: VideoPlayer(_controller),
+                      child: VideoPlayer(VideoPlayerController.network(
+                          'http://alakshyatechno.tech/video/trending1.mp4')..initialize()),
                     ),
                   )
                 ],
