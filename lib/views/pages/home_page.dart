@@ -22,31 +22,23 @@ class _HomePageState extends State<HomePage> {
   ];
   List urlList = [];
 
-  final List photos = [
-    'a',
-    'a',
-    'a',
-    'a',
-  ];
+  final List<String> video_url_list = [];
 
   VideoPlayerController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.network(
-        'http://alakshyatechno.tech/video/trending1.mp4')
-      ..initialize().then((_) {
-        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
-        setState(() {});
+    MixStatusVideo().getlist().then((List<String> _list) {
+      print(_list);
+      setState(() {
+        video_url_list.addAll(_list);
       });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    MixStatusVideo().getlist().then((List _list) {
-      print(_list);
-    });
     return Scaffold(
       appBar: AppBar(
         title: Text('Everyday Status, Businesscard, photo & video status'),
@@ -115,23 +107,23 @@ class _HomePageState extends State<HomePage> {
                 titleText: 'Mix Status Video',
                 onPressed: () {},
               ),
-              Row(
-                children: [
-                  InkWell(
-                    onTap: () {
-                      _controller.play();
-                    },
-                    onDoubleTap: () {
-                      _controller.pause();
-                    },
-                    child: Container(
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: List<Widget>.generate(video_url_list.length,
+                      (int index1) {
+                    return Container(
                       height: 200,
                       width: 140,
-                      child: VideoPlayer(_controller),
-                    ),
-                  )
-                ],
-              )
+                      child: VideoPlayer(
+                        VideoPlayerController.network(video_url_list[index1])
+                          ..initialize(),
+                      ),
+                    );
+                  }),
+                ),
+              ),
             ],
           ),
         ),
