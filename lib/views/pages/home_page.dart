@@ -1,4 +1,4 @@
-import 'package:advance_video_share/services/mix_status_video_api.dart';
+import 'package:advance_video_share/services/api_video_list.dart';
 import 'package:advance_video_share/views/widgets/home_page_drawer.dart';
 import 'package:advance_video_share/views/widgets/main_category_title.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +22,13 @@ class _HomePageState extends State<HomePage> {
   ];
   List urlList = [];
 
-  final List<String> video_url_list = [];
+  final List<String> mixStatusVideoUrlList = [];
+  final List<String> shortMovieVideoUrlList = [];
+  final List<String> festiveStatusUrlList = [];
+  final List<String> kindsZoneUrlList = [];
+  final List<String> oldSongsVideoUrlList = [];
+  final List<String> photoStatusUrlList = [];
+  final List<String> createYourOwnVideoUrlList = [];
 
   VideoPlayerController _controller;
 
@@ -30,9 +36,38 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     MixStatusVideo().getlist().then((List<String> _list) {
-      print(_list);
       setState(() {
-        video_url_list.addAll(_list);
+        mixStatusVideoUrlList.addAll(_list);
+      });
+    });
+    ShortMovieVideo().getlist().then((List<String> _list) {
+      setState(() {
+        shortMovieVideoUrlList.addAll(_list);
+      });
+    });
+    FestiveStatus().getlist().then((List<String> _list) {
+      setState(() {
+        festiveStatusUrlList.addAll(_list);
+      });
+    });
+    KidsZone().getlist().then((List<String> _list) {
+      setState(() {
+        kindsZoneUrlList.addAll(_list);
+      });
+    });
+    OldSongsVideo().getlist().then((List<String> _list) {
+      setState(() {
+        oldSongsVideoUrlList.addAll(_list);
+      });
+    });
+    PhotoStatus().getlist().then((List<String> _list) {
+      setState(() {
+        photoStatusUrlList.addAll(_list);
+      });
+    });
+    CreateYourOwnVideo().getlist().then((List<String> _list) {
+      setState(() {
+        photoStatusUrlList.addAll(_list);
       });
     });
   }
@@ -111,14 +146,152 @@ class _HomePageState extends State<HomePage> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   mainAxisSize: MainAxisSize.max,
-                  children: List<Widget>.generate(video_url_list.length,
+                  children: List<Widget>.generate(mixStatusVideoUrlList.length,
                       (int index1) {
-                    return Container(
-                      height: 200,
-                      width: 140,
-                      child: VideoPlayer(
-                        VideoPlayerController.network(video_url_list[index1])
-                          ..initialize(),
+                    return Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Container(
+                        height: 200,
+                        width: 140,
+                        child: VideoPlayer(
+                          VideoPlayerController.network(
+                              mixStatusVideoUrlList[index1])
+                            ..initialize(),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+              MainCategoryTitle(
+                  titleText: 'Short Movie Video', onPressed: () {}),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: List<Widget>.generate(shortMovieVideoUrlList.length,
+                      (int index1) {
+                    return Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Container(
+                        height: 200,
+                        width: 140,
+                        child: VideoPlayer(
+                          VideoPlayerController.network(
+                              shortMovieVideoUrlList[index1])
+                            ..initialize(),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+              MainCategoryTitle(titleText: 'Festive Status', onPressed: () {}),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: List<Widget>.generate(festiveStatusUrlList.length,
+                      (int index1) {
+                    return Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Container(
+                        height: 200,
+                        width: 140,
+                        child: VideoPlayer(
+                          VideoPlayerController.network(
+                              festiveStatusUrlList[index1])
+                            ..initialize(),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+              MainCategoryTitle(titleText: 'Kids Zone', onPressed: () {}),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: List<Widget>.generate(kindsZoneUrlList.length,
+                      (int index1) {
+                    return Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Container(
+                        height: 200,
+                        width: 140,
+                        child: VideoPlayer(
+                          VideoPlayerController.network(
+                              kindsZoneUrlList[index1])
+                            ..initialize(),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+              MainCategoryTitle(titleText: 'Old Songs Video', onPressed: () {}),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: List<Widget>.generate(oldSongsVideoUrlList.length,
+                      (int index1) {
+                    return Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Container(
+                        height: 200,
+                        width: 140,
+                        child: VideoPlayer(
+                          VideoPlayerController.network(
+                              oldSongsVideoUrlList[index1])
+                            ..initialize(),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+              MainCategoryTitle(titleText: 'Photo Status', onPressed: () {}),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: List<Widget>.generate(photoStatusUrlList.length,
+                      (int index1) {
+                    return Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Container(
+                        height: 200,
+                        width: 140,
+                        child: VideoPlayer(
+                          VideoPlayerController.network(
+                              photoStatusUrlList[index1])
+                            ..initialize(),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+              MainCategoryTitle(
+                  titleText: 'Create Your Own Video', onPressed: () {}),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: List<Widget>.generate(createYourOwnVideoUrlList.length,
+                      (int index1) {
+                    return Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Container(
+                        height: 200,
+                        width: 140,
+                        child: VideoPlayer(
+                          VideoPlayerController.network(
+                              createYourOwnVideoUrlList[index1])
+                            ..initialize(),
+                        ),
                       ),
                     );
                   }),
