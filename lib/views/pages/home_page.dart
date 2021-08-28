@@ -1,4 +1,6 @@
 import 'package:advance_video_share/services/api_video_list.dart';
+import 'package:advance_video_share/views/pages/MixStatusVideo_screen.dart';
+import 'package:advance_video_share/views/pages/play_video_landscape.dart';
 import 'package:advance_video_share/views/widgets/home_page_drawer.dart';
 import 'package:advance_video_share/views/widgets/main_category_title.dart';
 import 'package:flutter/material.dart';
@@ -140,163 +142,30 @@ class _HomePageState extends State<HomePage> {
               ),
               MainCategoryTitle(
                 titleText: 'Mix Status Video',
-                onPressed: () {},
-              ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: List<Widget>.generate(mixStatusVideoUrlList.length,
-                      (int index1) {
-                    return Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Container(
-                        height: 200,
-                        width: 140,
-                        child: VideoPlayer(
-                          VideoPlayerController.network(
-                              mixStatusVideoUrlList[index1])
-                            ..initialize(),
-                        ),
-                      ),
-                    );
-                  }),
+                onPressed: () {
+                  Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      MixStatusVideoScreen(),
                 ),
+              );
+                },
               ),
+              horizotalContainer(mixStatusVideoUrlList, context),
               MainCategoryTitle(
                   titleText: 'Short Movie Video', onPressed: () {}),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: List<Widget>.generate(shortMovieVideoUrlList.length,
-                      (int index1) {
-                    return Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Container(
-                        height: 200,
-                        width: 140,
-                        child: VideoPlayer(
-                          VideoPlayerController.network(
-                              shortMovieVideoUrlList[index1])
-                            ..initialize(),
-                        ),
-                      ),
-                    );
-                  }),
-                ),
-              ),
+              horizotalContainer(shortMovieVideoUrlList, context),
               MainCategoryTitle(titleText: 'Festive Status', onPressed: () {}),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: List<Widget>.generate(festiveStatusUrlList.length,
-                      (int index1) {
-                    return Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Container(
-                        height: 200,
-                        width: 140,
-                        child: VideoPlayer(
-                          VideoPlayerController.network(
-                              festiveStatusUrlList[index1])
-                            ..initialize(),
-                        ),
-                      ),
-                    );
-                  }),
-                ),
-              ),
+              horizotalContainer(festiveStatusUrlList, context),
               MainCategoryTitle(titleText: 'Kids Zone', onPressed: () {}),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: List<Widget>.generate(kindsZoneUrlList.length,
-                      (int index1) {
-                    return Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Container(
-                        height: 200,
-                        width: 140,
-                        child: VideoPlayer(
-                          VideoPlayerController.network(
-                              kindsZoneUrlList[index1])
-                            ..initialize(),
-                        ),
-                      ),
-                    );
-                  }),
-                ),
-              ),
+              horizotalContainer(kindsZoneUrlList, context),
               MainCategoryTitle(titleText: 'Old Songs Video', onPressed: () {}),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: List<Widget>.generate(oldSongsVideoUrlList.length,
-                      (int index1) {
-                    return Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Container(
-                        height: 200,
-                        width: 140,
-                        child: VideoPlayer(
-                          VideoPlayerController.network(
-                              oldSongsVideoUrlList[index1])
-                            ..initialize(),
-                        ),
-                      ),
-                    );
-                  }),
-                ),
-              ),
+              horizotalContainer(oldSongsVideoUrlList, context),
               MainCategoryTitle(titleText: 'Photo Status', onPressed: () {}),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: List<Widget>.generate(photoStatusUrlList.length,
-                      (int index1) {
-                    return Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Container(
-                        height: 200,
-                        width: 140,
-                        child: VideoPlayer(
-                          VideoPlayerController.network(
-                              photoStatusUrlList[index1])
-                            ..initialize(),
-                        ),
-                      ),
-                    );
-                  }),
-                ),
-              ),
+              horizotalContainer(photoStatusUrlList, context),
               MainCategoryTitle(
                   titleText: 'Create Your Own Video', onPressed: () {}),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: List<Widget>.generate(createYourOwnVideoUrlList.length,
-                      (int index1) {
-                    return Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Container(
-                        height: 200,
-                        width: 140,
-                        child: VideoPlayer(
-                          VideoPlayerController.network(
-                              createYourOwnVideoUrlList[index1])
-                            ..initialize(),
-                        ),
-                      ),
-                    );
-                  }),
-                ),
-              ),
             ],
           ),
         ),
@@ -311,6 +180,38 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+Widget horizotalContainer(List<String> videoUrlList, BuildContext context) {
+  return SingleChildScrollView(
+    scrollDirection: Axis.horizontal,
+    child: Row(
+      mainAxisSize: MainAxisSize.max,
+      children: List<Widget>.generate(videoUrlList.length, (int index1) {
+        return Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: InkWell(
+            child: Container(
+              height: 200,
+              width: 140,
+              child: VideoPlayer(
+                VideoPlayerController.network(videoUrlList[index1])
+                  ..initialize(),
+              ),
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      PlayVideoLandscape(videoUrlList[index1]),
+                ),
+              );
+            },
+          ),
+        );
+      }),
+    ),
+  );
+}
 
 // NetworkImage(
 //                                       'http://alakshyatechno.tech/video/image/1.png'),

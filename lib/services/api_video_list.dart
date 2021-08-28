@@ -12,7 +12,7 @@ class MixStatusVideo {
       var jsonConvert = jsonDecode(response.body);
       String videoPath = jsonConvert['video_path'];
       List outputList = jsonConvert['output']['data'];
-      for (var i = 0; i <= 5; i++) {
+      for (var i = 0; i <= 2; i++) {
         // for loop :- url list
         String videoName = outputList[i]['video_name'];
         String videoUrl = videoPath + '/' + videoName;
@@ -33,7 +33,7 @@ class ShortMovieVideo {
       var jsonConvert = jsonDecode(response.body);
       String videoPath = jsonConvert['video_path'];
       List outputList = jsonConvert['output']['data'];
-      for (var i = 0; i <= 5; i++) {
+      for (var i = 0; i <= 2; i++) {
         // for loop :- url list
         String videoName = outputList[i]['video_name'];
         String videoUrl = videoPath + '/' + videoName;
@@ -54,7 +54,7 @@ class FestiveStatus {
       var jsonConvert = jsonDecode(response.body);
       String videoPath = jsonConvert['video_path'];
       List outputList = jsonConvert['output']['data'];
-      for (var i = 0; i <= 5; i++) {
+      for (var i = 0; i <= 2; i++) {
         // for loop :- url list
         String videoName = outputList[i]['video_name'];
         String videoUrl = videoPath + '/' + videoName;
@@ -75,7 +75,7 @@ class KidsZone {
       var jsonConvert = jsonDecode(response.body);
       String videoPath = jsonConvert['video_path'];
       List outputList = jsonConvert['output']['data'];
-      for (var i = 0; i <= 5; i++) {
+      for (var i = 0; i <= 2; i++) {
         // for loop :- url list
         String videoName = outputList[i]['video_name'];
         String videoUrl = videoPath + '/' + videoName;
@@ -96,7 +96,7 @@ class OldSongsVideo {
       var jsonConvert = jsonDecode(response.body);
       String videoPath = jsonConvert['video_path'];
       List outputList = jsonConvert['output']['data'];
-      for (var i = 0; i <= 5; i++) {
+      for (var i = 0; i <= 2; i++) {
         // for loop :- url list
         String videoName = outputList[i]['video_name'];
         String videoUrl = videoPath + '/' + videoName;
@@ -117,7 +117,7 @@ class PhotoStatus {
       var jsonConvert = jsonDecode(response.body);
       String videoPath = jsonConvert['video_path'];
       List outputList = jsonConvert['output']['data'];
-      for (var i = 0; i <= 5; i++) {
+      for (var i = 0; i <= 2; i++) {
         // for loop :- url list
         String videoName = outputList[i]['video_name'];
         String videoUrl = videoPath + '/' + videoName;
@@ -138,7 +138,7 @@ class CreateYourOwnVideo {
       var jsonConvert = jsonDecode(response.body);
       String videoPath = jsonConvert['video_path'];
       List outputList = jsonConvert['output']['data'];
-      for (var i = 0; i <= 5; i++) {
+      for (var i = 0; i <= 2; i++) {
         // for loop :- url list
         String videoName = outputList[i]['video_name'];
         String videoUrl = videoPath + '/' + videoName;
