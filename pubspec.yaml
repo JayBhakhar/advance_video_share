@@ -57,6 +57,10 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
    -  assets/icon/
+   -  assets/icon/kids_zone/
+   -  assets/icon/mix_status_icon/
+   -  assets/icon/photo_status/
+   -  assets/icon/short_movie/
    -  assets/photos/
 
 

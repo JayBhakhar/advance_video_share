@@ -1,5 +1,8 @@
 import 'package:advance_video_share/services/api_video_list.dart';
+import 'package:advance_video_share/views/pages/KidsZone_screen.dart';
 import 'package:advance_video_share/views/pages/MixStatusVideo_screen.dart';
+import 'package:advance_video_share/views/pages/PhotoStatus_screen.dart';
+import 'package:advance_video_share/views/pages/ShortMovieVideo_screen.dart';
 import 'package:advance_video_share/views/pages/play_video_landscape.dart';
 import 'package:advance_video_share/views/widgets/home_page_drawer.dart';
 import 'package:advance_video_share/views/widgets/main_category_title.dart';
@@ -20,9 +23,8 @@ class _HomePageState extends State<HomePage> {
     'Kids Zone', // 0/5
     'Old Songs Video', // 0/6
     'Photo Status', // 0/7
-    'Create Your Own Video' // 0/8
+    'Create Your Own Video'
   ];
-  List urlList = [];
 
   final List<String> mixStatusVideoUrlList = [];
   final List<String> shortMovieVideoUrlList = [];
@@ -85,87 +87,62 @@ class _HomePageState extends State<HomePage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Column(
-                children: <Widget>[
-                  MainCategoryTitle(
-                    titleText: "Make Your Business Card Status",
-                    onPressed: () {},
-                  ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        InkWell(
-                          child: Container(
-                            margin: EdgeInsets.all(5),
-                            height: 100,
-                            width: 100,
-                            color: Colors.amberAccent,
-                            child: Image.asset('assets/photos/09.jpg'),
-                          ),
-                          onTap: () {},
-                        ),
-                        Container(
-                          margin: EdgeInsets.all(5),
-                          height: 100,
-                          width: 60,
-                          color: Colors.amberAccent,
-                        ),
-                        Container(
-                          margin: EdgeInsets.all(5),
-                          height: 100,
-                          width: 60,
-                          color: Colors.amberAccent,
-                        ),
-                        Container(
-                          margin: EdgeInsets.all(5),
-                          height: 100,
-                          width: 60,
-                          color: Colors.amberAccent,
-                        ),
-                        Container(
-                          margin: EdgeInsets.all(5),
-                          height: 100,
-                          width: 60,
-                          color: Colors.amberAccent,
-                        ),
-                        Container(
-                          margin: EdgeInsets.all(5),
-                          height: 100,
-                          width: 60,
-                          color: Colors.amberAccent,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+              TextButton(
+                onPressed: () {},
+                child: Text('Make Your Business Card Status'),
               ),
               MainCategoryTitle(
                 titleText: 'Mix Status Video',
                 onPressed: () {
                   Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      MixStatusVideoScreen(),
-                ),
-              );
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MixStatusVideoScreen(),
+                    ),
+                  );
                 },
               ),
               horizotalContainer(mixStatusVideoUrlList, context),
               MainCategoryTitle(
-                  titleText: 'Short Movie Video', onPressed: () {}),
+                  titleText: 'Short Movie Video', onPressed: () {
+                     Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ShortMovieVideoScreen(),
+                    ),
+                  );
+                  }),
               horizotalContainer(shortMovieVideoUrlList, context),
               MainCategoryTitle(titleText: 'Festive Status', onPressed: () {}),
               horizotalContainer(festiveStatusUrlList, context),
-              MainCategoryTitle(titleText: 'Kids Zone', onPressed: () {}),
+              MainCategoryTitle(
+                  titleText: 'Kids Zone',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => KindsZoneScreen(),
+                      ),
+                    );
+                  }),
               horizotalContainer(kindsZoneUrlList, context),
               MainCategoryTitle(titleText: 'Old Songs Video', onPressed: () {}),
               horizotalContainer(oldSongsVideoUrlList, context),
-              MainCategoryTitle(titleText: 'Photo Status', onPressed: () {}),
-              horizotalContainer(photoStatusUrlList, context),
               MainCategoryTitle(
-                  titleText: 'Create Your Own Video', onPressed: () {}),
+                  titleText: 'Photo Status',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PhotoStatusScreen(),
+                      ),
+                    );
+                  }),
+              horizotalContainer(photoStatusUrlList, context),
+              TextButton(
+                onPressed: () {},
+                child: Text('Create Your Own Video'),
+              )
             ],
           ),
         ),

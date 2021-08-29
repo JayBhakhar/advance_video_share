@@ -3,44 +3,35 @@ import 'package:advance_video_share/views/pages/play_video_landscape.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
-class MixStatusVideoScreen extends StatefulWidget {
+class ShortMovieVideoScreen extends StatefulWidget {
   @override
-  _MixStatusVideoScreenState createState() => _MixStatusVideoScreenState();
+  _ShortMovieVideoScreenState createState() => _ShortMovieVideoScreenState();
 }
 
-class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
+class _ShortMovieVideoScreenState extends State<ShortMovieVideoScreen> {
   final List<String> subcategory = [
     'all',
     'action',
     'bgm',
-    'bike lover',
-    'car lover',
+    'cartoon',
     'comedy',
     'dance',
-    'festival',
-    'garba',
-    'god',
     'horror',
-    'love',
-    'mother',
-    'nature',
-    'road trip',
     'romantic',
     'sad',
-    'sport',
     'trending'
   ];
 
-  final List<String> mixStatusVideoUrlList = [];
+  final List<String> shortMovieVideoUrlList = [];
 
   VideoPlayerController _controller;
 
   @override
   void initState() {
     super.initState();
-    MixStatusVideo().getlist().then((List<String> _list) {
+    ShortMovieVideo().getlist().then((List<String> _list) {
       setState(() {
-        mixStatusVideoUrlList.addAll(_list);
+        shortMovieVideoUrlList.addAll(_list);
       });
     });
   }
@@ -121,7 +112,7 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
                     childAspectRatio: 2 / 2,
                     crossAxisSpacing: 10,
                     mainAxisSpacing: 10),
-                itemCount: mixStatusVideoUrlList.length,
+                itemCount: shortMovieVideoUrlList.length,
                 itemBuilder: (BuildContext context, index) {
                   return Padding(
                     padding: const EdgeInsets.all(4.0),
@@ -131,7 +122,7 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
                         width: 140,
                         child: VideoPlayer(
                           VideoPlayerController.network(
-                              mixStatusVideoUrlList[index])
+                              shortMovieVideoUrlList[index])
                             ..initialize(),
                         ),
                       ),
@@ -140,7 +131,7 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => PlayVideoLandscape(
-                                mixStatusVideoUrlList[index]),
+                                shortMovieVideoUrlList[index]),
                           ),
                         );
                       },
@@ -197,7 +188,7 @@ class Search extends SearchDelegate {
   final List<String> listExample;
   Search(this.listExample);
 
-  List<String> recentList = ['Action', 'Comedy', 'Garba', 'Nature', 'Sport'];
+  List<String> recentList = ['Action', 'Comedy', 'Dance', 'Horror', 'Sad'];
 
   @override
   Widget buildSuggestions(BuildContext context) {

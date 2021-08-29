@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class MainCategoryTitle extends StatelessWidget {
   final String titleText;
   final Function onPressed;
+
   MainCategoryTitle({
     @required this.titleText,
     @required this.onPressed,
@@ -28,7 +29,7 @@ class MainCategoryTitle extends StatelessWidget {
           ),
           trailing: TextButton(
             child: Text('See All'),
-            onPressed: () {},
+            onPressed: onPressed,
           ),
         ),
       ],

@@ -3,44 +3,39 @@ import 'package:advance_video_share/views/pages/play_video_landscape.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
-class MixStatusVideoScreen extends StatefulWidget {
+class PhotoStatusScreen extends StatefulWidget {
   @override
-  _MixStatusVideoScreenState createState() => _MixStatusVideoScreenState();
+  _PhotoStatusScreenState createState() => _PhotoStatusScreenState();
 }
 
-class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
+class _PhotoStatusScreenState extends State<PhotoStatusScreen> {
   final List<String> subcategory = [
     'all',
-    'action',
-    'bgm',
-    'bike lover',
-    'car lover',
-    'comedy',
-    'dance',
+    'business',
     'festival',
-    'garba',
+    'friendship',
     'god',
-    'horror',
     'love',
+    'mix',
     'mother',
-    'nature',
-    'road trip',
+    'motivation',
+    'naratri',
+    'mother',
     'romantic',
     'sad',
-    'sport',
-    'trending'
+    'shayri',
   ];
 
-  final List<String> mixStatusVideoUrlList = [];
+  final List<String> photoStatusUrlList = [];
 
   VideoPlayerController _controller;
 
   @override
   void initState() {
     super.initState();
-    MixStatusVideo().getlist().then((List<String> _list) {
+    PhotoStatus().getlist().then((List<String> _list) {
       setState(() {
-        mixStatusVideoUrlList.addAll(_list);
+        photoStatusUrlList.addAll(_list);
       });
     });
   }
@@ -99,7 +94,7 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
                             child: Container(
                               height: 80,
                               child: Image.asset(
-                                  'assets/icon/mix_status_icon/${subcategory[index1]}.png'),
+                                  'assets/icon/photo_status/${subcategory[index1]}.png'),
                             ),
                           ),
                           Text(subcategory[index1]),
@@ -121,7 +116,7 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
                     childAspectRatio: 2 / 2,
                     crossAxisSpacing: 10,
                     mainAxisSpacing: 10),
-                itemCount: mixStatusVideoUrlList.length,
+                itemCount: photoStatusUrlList.length,
                 itemBuilder: (BuildContext context, index) {
                   return Padding(
                     padding: const EdgeInsets.all(4.0),
@@ -131,7 +126,7 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
                         width: 140,
                         child: VideoPlayer(
                           VideoPlayerController.network(
-                              mixStatusVideoUrlList[index])
+                              photoStatusUrlList[index])
                             ..initialize(),
                         ),
                       ),
@@ -139,8 +134,8 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => PlayVideoLandscape(
-                                mixStatusVideoUrlList[index]),
+                            builder: (context) =>
+                                PlayVideoLandscape(photoStatusUrlList[index]),
                           ),
                         );
                       },
@@ -197,7 +192,13 @@ class Search extends SearchDelegate {
   final List<String> listExample;
   Search(this.listExample);
 
-  List<String> recentList = ['Action', 'Comedy', 'Garba', 'Nature', 'Sport'];
+  List<String> recentList = [
+    'Business',
+    'God',
+    'Motivation',
+    'Romantic',
+    'Shayari',
+  ];
 
   @override
   Widget buildSuggestions(BuildContext context) {
