@@ -5,3 +5,5 @@ const subcategoryConatainerHeight = 60.0;
 const subcategoryConatainerWidth = 60.0;
 const subcategoryImageHeight = 40.0;
 const subcategoryTextStyle = TextStyle(fontSize: 10);
+const gridViewContainerHeight = 200.0;
+const gridViewContainerWidth = 140.0;

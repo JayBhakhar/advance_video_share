@@ -26,7 +26,6 @@ class _PlayVideoLandscapeState extends State<PlayVideoLandscape> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.videoUrl); 
     return SafeArea(
       child: Scaffold(
         body: InkWell(

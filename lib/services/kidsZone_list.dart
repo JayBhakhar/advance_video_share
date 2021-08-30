@@ -112,7 +112,6 @@ class KidsZone {
         String videoUrl = videoPath + '/' + videoName;
         videoUrlList.add(videoUrl);
       }
-      print(videoUrlList);
       return videoUrlList;
     }
     return null; // error messange of internet probelm

@@ -1,6 +1,7 @@
 import 'package:advance_video_share/consts/constants.dart';
 import 'package:advance_video_share/services/kidsZone_list.dart';
 import 'package:advance_video_share/views/pages/play_video_landscape.dart';
+import 'package:advance_video_share/views/widgets/custom_gridviewbuilder.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -35,6 +36,7 @@ class _KindsZoneScreenState extends State<KindsZoneScreen> {
   final List<String> mrBean = [];
   final List<String> talkingTom = [];
   final List<String> tomAndJerry = [];
+  int subcategoryIndex = 0;
 
   VideoPlayerController _controller;
 
@@ -45,14 +47,57 @@ class _KindsZoneScreenState extends State<KindsZoneScreen> {
       setState(() {
         kindsZoneAll.addAll(_list);
       });
-      print(kindsZoneAll);
     });
-    // KidsZone().getlistAlladin().then((List<String> _list) {
-    //   setState(() {
-    //     kindsZoneAll.addAll(_list);
-    //   });
-    //   print(kindsZoneAll);
-    // });
+    KidsZone().getlistAlladin().then((List<String> _list) {
+      setState(() {
+        alladin.addAll(_list);
+      });
+    });
+    KidsZone().getlistAnimal().then((List<String> _list) {
+      setState(() {
+        animal.addAll(_list);
+      });
+    });
+    KidsZone().getlistChottabhim().then((List<String> _list) {
+      setState(() {
+        chottaBhim.addAll(_list);
+      });
+    });
+    KidsZone().getlistDuckTales().then((List<String> _list) {
+      setState(() {
+        duckTales.addAll(_list);
+      });
+    });
+    KidsZone().getlistJungleBook().then((List<String> _list) {
+      setState(() {
+        jungleBook.addAll(_list);
+      });
+    });
+    KidsZone().getlistJurassicPark().then((List<String> _list) {
+      setState(() {
+        jurassicPark.addAll(_list);
+      });
+    });
+    KidsZone().getlistMotuPatlu().then((List<String> _list) {
+      setState(() {
+        motuPatlu.addAll(_list);
+      });
+    });
+    KidsZone().getlistMrBean().then((List<String> _list) {
+      setState(() {
+        mrBean.addAll(_list);
+      });
+    });
+    KidsZone().getlistTalkingTom().then((List<String> _list) {
+      setState(() {
+        talkingTom.addAll(_list);
+      });
+    });
+    KidsZone().getlistTomAndJerry().then((List<String> _list) {
+      setState(() {
+        tomAndJerry.addAll(_list);
+      });
+    });
   }
 
   @override
@@ -97,7 +142,9 @@ class _KindsZoneScreenState extends State<KindsZoneScreen> {
                     List<Widget>.generate(subcategory.length, (int index) {
                   return InkWell(
                     onTap: () {
-                      print(index);
+                      setState(() {
+                        subcategoryIndex = index;
+                      });
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(2.0),
@@ -116,7 +163,10 @@ class _KindsZoneScreenState extends State<KindsZoneScreen> {
                                     'assets/icon/kids_zone/${subcategory[index]}.png'),
                               ),
                             ),
-                            Text(subcategory[index], style: subcategoryTextStyle,),
+                            Text(
+                              subcategory[index],
+                              style: subcategoryTextStyle,
+                            ),
                           ],
                         ),
                       ),
@@ -128,39 +178,32 @@ class _KindsZoneScreenState extends State<KindsZoneScreen> {
             SizedBox(
               height: 2,
             ),
-            GridView.builder(
-                shrinkWrap: true,
-                physics: ScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 200,
-                    childAspectRatio: 1.5 / 2,
-                    crossAxisSpacing: 1,
-                    mainAxisSpacing: 1),
-                itemCount: kindsZoneAll.length,
-                itemBuilder: (BuildContext context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: InkWell(
-                      child: Container(
-                        height: 200,
-                        width: 140,
-                        // child: VideoPlayer(
-                        //   VideoPlayerController.network(kindsZoneAll[index])
-                        //     ..initialize(),
-                        // ),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                PlayVideoLandscape(kindsZoneAll[index]),
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                }),
+            Builder(
+              builder: (BuildContext context) {
+                if (subcategoryIndex == 0) {
+                  return customGridViewBuilder(kindsZoneAll);
+                } else if (subcategoryIndex == 1) {
+                  return customGridViewBuilder(alladin);
+                } else if (subcategoryIndex == 2) {
+                  return customGridViewBuilder(animal);
+                } else if (subcategoryIndex == 3) {
+                  return customGridViewBuilder(chottaBhim);
+                } else if (subcategoryIndex == 4) {
+                  return customGridViewBuilder(duckTales);
+                } else if (subcategoryIndex == 5) {
+                  return customGridViewBuilder(jungleBook);
+                } else if (subcategoryIndex == 6) {
+                  return customGridViewBuilder(jurassicPark);
+                } else if (subcategoryIndex == 7) {
+                  return customGridViewBuilder(motuPatlu);
+                } else if (subcategoryIndex == 8) {
+                  return customGridViewBuilder(mrBean);
+                } else if (subcategoryIndex == 9) {
+                  return customGridViewBuilder(talkingTom);
+                }
+                return Container();
+              },
+            ),
           ],
         ),
       ),

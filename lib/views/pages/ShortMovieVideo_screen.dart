@@ -1,5 +1,7 @@
 import 'package:advance_video_share/consts/constants.dart';
+import 'package:advance_video_share/services/shortMovieVideo_list.dart';
 import 'package:advance_video_share/views/pages/play_video_landscape.dart';
+import 'package:advance_video_share/views/widgets/custom_gridviewbuilder.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -10,30 +12,86 @@ class ShortMovieVideoScreen extends StatefulWidget {
 
 class _ShortMovieVideoScreenState extends State<ShortMovieVideoScreen> {
   final List<String> subcategory = [
-    'all', // 0/3
-    'action', // 1/3
-    'bgm', // 3/3
-    'cartoon', // 8/3
-    'comedy', // 2/3
-    'dance', // 9/
-    'horror', // 4/3
-    'romantic', // 6/3
-    'sad', // 5/3
-    'trending' // 7/3
+    'all',
+    'action',
+    'bgm',
+    'cartoon',
+    'comedy',
+    'dance',
+    'horror',
+    'romantic',
+    'sad',
+    'trending'
   ];
 
-  final List<String> shortMovieVideoUrlList = [];
+  final List<String> shortMovieVideoAll = [];
+  final List<String> action = [];
+  final List<String> bgm = [];
+  final List<String> cartoon = [];
+  final List<String> comedy = [];
+  final List<String> dance = [];
+  final List<String> horror = [];
+  final List<String> romantic = [];
+  final List<String> sad = [];
+  final List<String> trending = [];
+
+  int subcategoryIndex = 0;
 
   VideoPlayerController _controller;
 
   @override
   void initState() {
     super.initState();
-    // ShortMovieVideo().getlistAll().then((List<String> _list) {
-    //   setState(() {
-    //     shortMovieVideoUrlList.addAll(_list);
-    //   });
-    // });
+    ShortMovieVideo().getlistAll().then((List<String> _list) {
+      setState(() {
+        shortMovieVideoAll.addAll(_list);
+      });
+    });
+    ShortMovieVideo().getlistAction().then((List<String> _list) {
+      setState(() {
+        action.addAll(_list);
+      });
+    });
+    ShortMovieVideo().getlistBgm().then((List<String> _list) {
+      setState(() {
+        bgm.addAll(_list);
+      });
+    });
+    ShortMovieVideo().getlistCartoon().then((List<String> _list) {
+      setState(() {
+        cartoon.addAll(_list);
+      });
+    });
+    ShortMovieVideo().getlistComedy().then((List<String> _list) {
+      setState(() {
+        cartoon.addAll(_list);
+      });
+    });
+    ShortMovieVideo().getlistDance().then((List<String> _list) {
+      setState(() {
+        dance.addAll(_list);
+      });
+    });
+    ShortMovieVideo().getlistHorror().then((List<String> _list) {
+      setState(() {
+        horror.addAll(_list);
+      });
+    });
+    ShortMovieVideo().getlistRomantic().then((List<String> _list) {
+      setState(() {
+        romantic.addAll(_list);
+      });
+    });
+    ShortMovieVideo().getlistSad().then((List<String> _list) {
+      setState(() {
+        sad.addAll(_list);
+      });
+    });
+    ShortMovieVideo().getlistTrending().then((List<String> _list) {
+      setState(() {
+        trending.addAll(_list);
+      });
+    });
   }
 
   @override
@@ -76,28 +134,35 @@ class _ShortMovieVideoScreenState extends State<ShortMovieVideoScreen> {
                 mainAxisSize: MainAxisSize.max,
                 children:
                     List<Widget>.generate(subcategory.length, (int index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: Container(
-                      height: subcategoryConatainerHeight,
-                      width: subcategoryConatainerWidth,
-                      // color: Colors.amberAccent,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(8.0),
-                            child: Container(
-                              height: subcategoryImageHeight,
-                              child: Image.asset(
-                                  'assets/icon/mix_status_icon/${subcategory[index]}.png'),
+                  return InkWell(
+                    onTap: () {
+                      setState(() {
+                        subcategoryIndex = index;
+                      });
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(2.0),
+                      child: Container(
+                        height: subcategoryConatainerHeight,
+                        width: subcategoryConatainerWidth,
+                        // color: Colors.amberAccent,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8.0),
+                              child: Container(
+                                height: subcategoryImageHeight,
+                                child: Image.asset(
+                                    'assets/icon/short_movie/${subcategory[index]}.png'),
+                              ),
                             ),
-                          ),
-                          Text(
-                            subcategory[index],
-                            style: subcategoryTextStyle,
-                          ),
-                        ],
+                            Text(
+                              subcategory[index],
+                              style: subcategoryTextStyle,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );
@@ -107,40 +172,33 @@ class _ShortMovieVideoScreenState extends State<ShortMovieVideoScreen> {
             SizedBox(
               height: 2,
             ),
-            GridView.builder(
-                shrinkWrap: true,
-                physics: ScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 200,
-                    childAspectRatio: 1.5 / 2,
-                    crossAxisSpacing: 1,
-                    mainAxisSpacing: 1),
-                itemCount: shortMovieVideoUrlList.length,
-                itemBuilder: (BuildContext context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: InkWell(
-                      child: Container(
-                        height: 200,
-                        width: 140,
-                        child: VideoPlayer(
-                          VideoPlayerController.network(
-                              shortMovieVideoUrlList[index])
-                            ..initialize(),
-                        ),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PlayVideoLandscape(
-                                shortMovieVideoUrlList[index]),
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                }),
+            Builder(
+              builder: (BuildContext context) {
+                if (subcategoryIndex == 0) {
+                  return customGridViewBuilder(shortMovieVideoAll);
+                } else if (subcategoryIndex == 1) {
+                  return customGridViewBuilder(action);
+                } else if (subcategoryIndex == 2) {
+                  return customGridViewBuilder(bgm);
+                } else if (subcategoryIndex == 3) {
+                  print(cartoon);
+                  return customGridViewBuilder(cartoon);
+                } else if (subcategoryIndex == 4) {
+                  return customGridViewBuilder(comedy);
+                } else if (subcategoryIndex == 5) {
+                  return customGridViewBuilder(dance);
+                } else if (subcategoryIndex == 6) {
+                  return customGridViewBuilder(horror);
+                } else if (subcategoryIndex == 7) {
+                  return customGridViewBuilder(romantic);
+                } else if (subcategoryIndex == 8) {
+                  return customGridViewBuilder(sad);
+                } else if (subcategoryIndex == 9) {
+                  return customGridViewBuilder(trending);
+                }
+                return Container();
+              },
+            ),
           ],
         ),
       ),

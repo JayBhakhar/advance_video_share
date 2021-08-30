@@ -98,7 +98,7 @@ class PhotoStatus {
     return null; // error messange of internet probelm
   }
 
-  Future<List<String>> getlistshayri() async {
+  Future<List<String>> getlistShayri() async {
     final url = Uri.parse('$apiBaseURL/44/7');
     Response response = await get(url);
     if (response.statusCode == 200) {
