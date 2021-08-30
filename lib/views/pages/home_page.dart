@@ -1,4 +1,9 @@
-import 'package:advance_video_share/services/api_video_list.dart';
+import 'package:advance_video_share/services/festiveStatus_list.dart';
+import 'package:advance_video_share/services/kidsZone_list.dart';
+import 'package:advance_video_share/services/mixStatusVideo_list.dart';
+import 'package:advance_video_share/services/oldSongsVideo_list.dart';
+import 'package:advance_video_share/services/photoStatus_list.dart';
+import 'package:advance_video_share/services/shortMovieVideo_list.dart';
 import 'package:advance_video_share/views/pages/KidsZone_screen.dart';
 import 'package:advance_video_share/views/pages/MixStatusVideo_screen.dart';
 import 'package:advance_video_share/views/pages/PhotoStatus_screen.dart';
@@ -39,37 +44,32 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    MixStatusVideo().getlist().then((List<String> _list) {
+    MixStatusVideo().getlistAll().then((List<String> _list) {
       setState(() {
         mixStatusVideoUrlList.addAll(_list);
       });
     });
-    ShortMovieVideo().getlist().then((List<String> _list) {
+    ShortMovieVideo().getlistAll().then((List<String> _list) {
       setState(() {
         shortMovieVideoUrlList.addAll(_list);
       });
     });
-    FestiveStatus().getlist().then((List<String> _list) {
+    FestiveStatus().getlistAll().then((List<String> _list) {
       setState(() {
         festiveStatusUrlList.addAll(_list);
       });
     });
-    KidsZone().getlist().then((List<String> _list) {
+    KidsZone().getlistAll().then((List<String> _list) {
       setState(() {
         kindsZoneUrlList.addAll(_list);
       });
     });
-    OldSongsVideo().getlist().then((List<String> _list) {
+    OldSongsVideo().getlistAll().then((List<String> _list) {
       setState(() {
         oldSongsVideoUrlList.addAll(_list);
       });
     });
-    PhotoStatus().getlist().then((List<String> _list) {
-      setState(() {
-        photoStatusUrlList.addAll(_list);
-      });
-    });
-    CreateYourOwnVideo().getlist().then((List<String> _list) {
+    PhotoStatus().getlistAll().then((List<String> _list) {
       setState(() {
         photoStatusUrlList.addAll(_list);
       });
@@ -104,13 +104,14 @@ class _HomePageState extends State<HomePage> {
               ),
               horizotalContainer(mixStatusVideoUrlList, context),
               MainCategoryTitle(
-                  titleText: 'Short Movie Video', onPressed: () {
-                     Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ShortMovieVideoScreen(),
-                    ),
-                  );
+                  titleText: 'Short Movie Video',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ShortMovieVideoScreen(),
+                      ),
+                    );
                   }),
               horizotalContainer(shortMovieVideoUrlList, context),
               MainCategoryTitle(titleText: 'Festive Status', onPressed: () {}),
@@ -169,10 +170,10 @@ Widget horizotalContainer(List<String> videoUrlList, BuildContext context) {
             child: Container(
               height: 200,
               width: 140,
-              child: VideoPlayer(
-                VideoPlayerController.network(videoUrlList[index1])
-                  ..initialize(),
-              ),
+              // child: VideoPlayer(
+              //   VideoPlayerController.network(videoUrlList[index1])
+              //     ..initialize(),
+              // ),
             ),
             onTap: () {
               Navigator.push(

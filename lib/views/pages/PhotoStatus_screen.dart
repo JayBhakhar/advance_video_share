@@ -1,4 +1,4 @@
-import 'package:advance_video_share/services/api_video_list.dart';
+import 'package:advance_video_share/consts/constants.dart';
 import 'package:advance_video_share/views/pages/play_video_landscape.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -10,20 +10,19 @@ class PhotoStatusScreen extends StatefulWidget {
 
 class _PhotoStatusScreenState extends State<PhotoStatusScreen> {
   final List<String> subcategory = [
-    'all',
-    'business',
-    'festival',
-    'friendship',
-    'god',
-    'love',
-    'mix',
-    'mother',
-    'motivation',
-    'naratri',
-    'mother',
-    'romantic',
-    'sad',
-    'shayri',
+    'all', // 0/7
+    'business', //3
+    'festival', //4
+    'friendship', //12
+    'god', //9
+    'love', //6
+    'mix', // 1/7
+    'mother', //10
+    'motivation', // 2/7
+    'navratri', //8
+    'romantic', //11
+    'sad', //7
+    'shayri', //5
   ];
 
   final List<String> photoStatusUrlList = [];
@@ -33,11 +32,11 @@ class _PhotoStatusScreenState extends State<PhotoStatusScreen> {
   @override
   void initState() {
     super.initState();
-    PhotoStatus().getlist().then((List<String> _list) {
-      setState(() {
-        photoStatusUrlList.addAll(_list);
-      });
-    });
+    // PhotoStatus().getlistAll().then((List<String> _list) {
+    //   setState(() {
+    //     photoStatusUrlList.addAll(_list);
+    //   });
+    // });
   }
 
   @override
@@ -79,12 +78,12 @@ class _PhotoStatusScreenState extends State<PhotoStatusScreen> {
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 children:
-                    List<Widget>.generate(subcategory.length, (int index1) {
+                    List<Widget>.generate(subcategory.length, (int index) {
                   return Padding(
                     padding: const EdgeInsets.all(2.0),
                     child: Container(
-                      height: 100,
-                      width: 100,
+                      height: subcategoryConatainerHeight,
+                      width: subcategoryConatainerWidth,
                       // color: Colors.amberAccent,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -92,12 +91,15 @@ class _PhotoStatusScreenState extends State<PhotoStatusScreen> {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
                             child: Container(
-                              height: 80,
+                              height: subcategoryImageHeight,
                               child: Image.asset(
-                                  'assets/icon/photo_status/${subcategory[index1]}.png'),
+                                  'assets/icon/photo_status/${subcategory[index]}.png'),
                             ),
                           ),
-                          Text(subcategory[index1]),
+                          Text(
+                            subcategory[index],
+                            style: subcategoryTextStyle,
+                          ),
                         ],
                       ),
                     ),
@@ -113,9 +115,9 @@ class _PhotoStatusScreenState extends State<PhotoStatusScreen> {
                 physics: ScrollPhysics(),
                 gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: 200,
-                    childAspectRatio: 2 / 2,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10),
+                    childAspectRatio: 1.5 / 2,
+                    crossAxisSpacing: 1,
+                    mainAxisSpacing: 1),
                 itemCount: photoStatusUrlList.length,
                 itemBuilder: (BuildContext context, index) {
                   return Padding(
@@ -124,11 +126,11 @@ class _PhotoStatusScreenState extends State<PhotoStatusScreen> {
                       child: Container(
                         height: 200,
                         width: 140,
-                        child: VideoPlayer(
-                          VideoPlayerController.network(
-                              photoStatusUrlList[index])
-                            ..initialize(),
-                        ),
+                        // child: VideoPlayer(
+                        //   VideoPlayerController.network(
+                        //       photoStatusUrlList[index])
+                        //     ..initialize(),
+                        // ),
                       ),
                       onTap: () {
                         Navigator.push(

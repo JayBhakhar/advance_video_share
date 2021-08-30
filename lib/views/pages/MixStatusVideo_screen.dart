@@ -1,4 +1,5 @@
-import 'package:advance_video_share/services/api_video_list.dart';
+import 'package:advance_video_share/consts/constants.dart';
+import 'package:advance_video_share/services/mixStatusVideo_list.dart';
 import 'package:advance_video_share/views/pages/play_video_landscape.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -10,25 +11,25 @@ class MixStatusVideoScreen extends StatefulWidget {
 
 class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
   final List<String> subcategory = [
-    'all',
-    'action',
-    'bgm',
-    'bike lover',
-    'car lover',
-    'comedy',
-    'dance',
-    'festival',
-    'garba',
-    'god',
-    'horror',
-    'love',
-    'mother',
-    'nature',
-    'road trip',
-    'romantic',
-    'sad',
-    'sport',
-    'trending'
+    'all', //0/2
+    'action', //7
+    'bgm', //4
+    'bike lover', //15
+    'car lover', //17
+    'comedy', //11
+    'dance', //5
+    'festival', //13
+    'garba', //12
+    'god', // 2/2
+    'horror', //6
+    'love', //8
+    'mother', //3
+    'nature', //14
+    'road trip', //16
+    'romantic', //10
+    'sad', //9
+    'sport', //18
+    'trending' // 1/2
   ];
 
   final List<String> mixStatusVideoUrlList = [];
@@ -38,7 +39,7 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
   @override
   void initState() {
     super.initState();
-    MixStatusVideo().getlist().then((List<String> _list) {
+    MixStatusVideo().getlistAll().then((List<String> _list) {
       setState(() {
         mixStatusVideoUrlList.addAll(_list);
       });
@@ -78,18 +79,18 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(height: 2),
+            SizedBox(height: 5),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 children:
-                    List<Widget>.generate(subcategory.length, (int index1) {
+                    List<Widget>.generate(subcategory.length, (int index) {
                   return Padding(
                     padding: const EdgeInsets.all(2.0),
                     child: Container(
-                      height: 100,
-                      width: 100,
+                      height: subcategoryConatainerHeight,
+                      width: subcategoryConatainerWidth,
                       // color: Colors.amberAccent,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -97,12 +98,15 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
                             child: Container(
-                              height: 80,
+                              height: subcategoryImageHeight,
                               child: Image.asset(
-                                  'assets/icon/mix_status_icon/${subcategory[index1]}.png'),
+                                  'assets/icon/mix_status_icon/${subcategory[index]}.png'),
                             ),
                           ),
-                          Text(subcategory[index1]),
+                          Text(
+                            subcategory[index],
+                            style: subcategoryTextStyle,
+                          ),
                         ],
                       ),
                     ),
@@ -117,18 +121,19 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
                 shrinkWrap: true,
                 physics: ScrollPhysics(),
                 gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 200,
-                    childAspectRatio: 2 / 2,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10),
+                  maxCrossAxisExtent: 200,
+                  childAspectRatio: 1.5 / 2,
+                  crossAxisSpacing: 1,
+                  mainAxisSpacing: 1,
+                ),
                 itemCount: mixStatusVideoUrlList.length,
                 itemBuilder: (BuildContext context, index) {
                   return Padding(
                     padding: const EdgeInsets.all(4.0),
                     child: InkWell(
                       child: Container(
-                        height: 200,
-                        width: 140,
+                        height: 250,
+                        width: 180,
                         child: VideoPlayer(
                           VideoPlayerController.network(
                               mixStatusVideoUrlList[index])

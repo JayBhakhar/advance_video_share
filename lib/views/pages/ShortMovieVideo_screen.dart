@@ -1,4 +1,4 @@
-import 'package:advance_video_share/services/api_video_list.dart';
+import 'package:advance_video_share/consts/constants.dart';
 import 'package:advance_video_share/views/pages/play_video_landscape.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -10,16 +10,16 @@ class ShortMovieVideoScreen extends StatefulWidget {
 
 class _ShortMovieVideoScreenState extends State<ShortMovieVideoScreen> {
   final List<String> subcategory = [
-    'all',
-    'action',
-    'bgm',
-    'cartoon',
-    'comedy',
-    'dance',
-    'horror',
-    'romantic',
-    'sad',
-    'trending'
+    'all', // 0/3
+    'action', // 1/3
+    'bgm', // 3/3
+    'cartoon', // 8/3
+    'comedy', // 2/3
+    'dance', // 9/
+    'horror', // 4/3
+    'romantic', // 6/3
+    'sad', // 5/3
+    'trending' // 7/3
   ];
 
   final List<String> shortMovieVideoUrlList = [];
@@ -29,11 +29,11 @@ class _ShortMovieVideoScreenState extends State<ShortMovieVideoScreen> {
   @override
   void initState() {
     super.initState();
-    ShortMovieVideo().getlist().then((List<String> _list) {
-      setState(() {
-        shortMovieVideoUrlList.addAll(_list);
-      });
-    });
+    // ShortMovieVideo().getlistAll().then((List<String> _list) {
+    //   setState(() {
+    //     shortMovieVideoUrlList.addAll(_list);
+    //   });
+    // });
   }
 
   @override
@@ -75,12 +75,12 @@ class _ShortMovieVideoScreenState extends State<ShortMovieVideoScreen> {
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 children:
-                    List<Widget>.generate(subcategory.length, (int index1) {
+                    List<Widget>.generate(subcategory.length, (int index) {
                   return Padding(
                     padding: const EdgeInsets.all(2.0),
                     child: Container(
-                      height: 100,
-                      width: 100,
+                      height: subcategoryConatainerHeight,
+                      width: subcategoryConatainerWidth,
                       // color: Colors.amberAccent,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -88,12 +88,15 @@ class _ShortMovieVideoScreenState extends State<ShortMovieVideoScreen> {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
                             child: Container(
-                              height: 80,
+                              height: subcategoryImageHeight,
                               child: Image.asset(
-                                  'assets/icon/mix_status_icon/${subcategory[index1]}.png'),
+                                  'assets/icon/mix_status_icon/${subcategory[index]}.png'),
                             ),
                           ),
-                          Text(subcategory[index1]),
+                          Text(
+                            subcategory[index],
+                            style: subcategoryTextStyle,
+                          ),
                         ],
                       ),
                     ),
@@ -109,9 +112,9 @@ class _ShortMovieVideoScreenState extends State<ShortMovieVideoScreen> {
                 physics: ScrollPhysics(),
                 gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: 200,
-                    childAspectRatio: 2 / 2,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10),
+                    childAspectRatio: 1.5 / 2,
+                    crossAxisSpacing: 1,
+                    mainAxisSpacing: 1),
                 itemCount: shortMovieVideoUrlList.length,
                 itemBuilder: (BuildContext context, index) {
                   return Padding(

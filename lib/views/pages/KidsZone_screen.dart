@@ -1,4 +1,5 @@
-import 'package:advance_video_share/services/api_video_list.dart';
+import 'package:advance_video_share/consts/constants.dart';
+import 'package:advance_video_share/services/kidsZone_list.dart';
 import 'package:advance_video_share/views/pages/play_video_landscape.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -10,31 +11,48 @@ class KindsZoneScreen extends StatefulWidget {
 
 class _KindsZoneScreenState extends State<KindsZoneScreen> {
   final List<String> subcategory = [
-    'all',
-    'alladin',
-    'animal',
-    'chotta bhim',
-    'duck tales',
-    'jungle book',
-    'jurassic park',
-    'motu patlu',
-    'mr bean',
-    'talking tom',
-    'tom and jerry',
+    'all', // 0/5
+    'alladin', //6
+    'animal', //5
+    'chotta bhim', //1/5
+    'duck tales', //7
+    'jungle book', //8
+    'jurassic park', //10
+    'motu patlu', //2/5
+    'mr bean', //4
+    'talking tom', //9
+    'tom and jerry', //3
   ];
 
-  final List<String> kindsZoneUrlList = [];
+  final List<String> kindsZoneAll = [];
+  final List<String> alladin = [];
+  final List<String> animal = [];
+  final List<String> chottaBhim = [];
+  final List<String> duckTales = [];
+  final List<String> jungleBook = [];
+  final List<String> jurassicPark = [];
+  final List<String> motuPatlu = [];
+  final List<String> mrBean = [];
+  final List<String> talkingTom = [];
+  final List<String> tomAndJerry = [];
 
   VideoPlayerController _controller;
 
   @override
   void initState() {
     super.initState();
-    KidsZone().getlist().then((List<String> _list) {
+    KidsZone().getlistAll().then((List<String> _list) {
       setState(() {
-        kindsZoneUrlList.addAll(_list);
+        kindsZoneAll.addAll(_list);
       });
+      print(kindsZoneAll);
     });
+    // KidsZone().getlistAlladin().then((List<String> _list) {
+    //   setState(() {
+    //     kindsZoneAll.addAll(_list);
+    //   });
+    //   print(kindsZoneAll);
+    // });
   }
 
   @override
@@ -76,26 +94,31 @@ class _KindsZoneScreenState extends State<KindsZoneScreen> {
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 children:
-                    List<Widget>.generate(subcategory.length, (int index1) {
-                  return Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: Container(
-                      height: 100,
-                      width: 100,
-                      // color: Colors.amberAccent,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(8.0),
-                            child: Container(
-                              height: 80,
-                              child: Image.asset(
-                                  'assets/icon/kids_zone/${subcategory[index1]}.png'),
+                    List<Widget>.generate(subcategory.length, (int index) {
+                  return InkWell(
+                    onTap: () {
+                      print(index);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(2.0),
+                      child: Container(
+                        height: subcategoryConatainerHeight,
+                        width: subcategoryConatainerWidth,
+                        // color: Colors.amberAccent,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8.0),
+                              child: Container(
+                                height: subcategoryImageHeight,
+                                child: Image.asset(
+                                    'assets/icon/kids_zone/${subcategory[index]}.png'),
+                              ),
                             ),
-                          ),
-                          Text(subcategory[index1]),
-                        ],
+                            Text(subcategory[index], style: subcategoryTextStyle,),
+                          ],
+                        ),
                       ),
                     ),
                   );
@@ -110,10 +133,10 @@ class _KindsZoneScreenState extends State<KindsZoneScreen> {
                 physics: ScrollPhysics(),
                 gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: 200,
-                    childAspectRatio: 2 / 2,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10),
-                itemCount: kindsZoneUrlList.length,
+                    childAspectRatio: 1.5 / 2,
+                    crossAxisSpacing: 1,
+                    mainAxisSpacing: 1),
+                itemCount: kindsZoneAll.length,
                 itemBuilder: (BuildContext context, index) {
                   return Padding(
                     padding: const EdgeInsets.all(4.0),
@@ -121,18 +144,17 @@ class _KindsZoneScreenState extends State<KindsZoneScreen> {
                       child: Container(
                         height: 200,
                         width: 140,
-                        child: VideoPlayer(
-                          VideoPlayerController.network(
-                              kindsZoneUrlList[index])
-                            ..initialize(),
-                        ),
+                        // child: VideoPlayer(
+                        //   VideoPlayerController.network(kindsZoneAll[index])
+                        //     ..initialize(),
+                        // ),
                       ),
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => PlayVideoLandscape(
-                                kindsZoneUrlList[index]),
+                            builder: (context) =>
+                                PlayVideoLandscape(kindsZoneAll[index]),
                           ),
                         );
                       },
