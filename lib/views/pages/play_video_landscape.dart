@@ -54,9 +54,7 @@ class _PlayVideoLandscapeState extends State<PlayVideoLandscape> {
       final baseStorage = await getDownloadsDirectory();
       print('+++++++++++++++++++++++++++++++++ ${baseStorage.path}');
       final id = await FlutterDownloader.enqueue(
-          url: widget.videoUrl,
-          savedDir: baseStorage.path,
-          fileName: 'firstfile2.mp4');
+          url: widget.videoUrl, savedDir: baseStorage.path);
     } else {
       print('No permission');
     }

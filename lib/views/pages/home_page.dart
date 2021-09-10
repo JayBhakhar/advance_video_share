@@ -170,10 +170,10 @@ Widget horizotalContainer(List<String> videoUrlList, BuildContext context) {
             child: Container(
               height: 200,
               width: 140,
-              // child: VideoPlayer(
-              //   VideoPlayerController.network(videoUrlList[index1])
-              //     ..initialize(),
-              // ),
+              child: VideoPlayer(
+                VideoPlayerController.network(videoUrlList[index1])
+                  ..initialize(),
+              ),
             ),
             onTap: () {
               Navigator.push(

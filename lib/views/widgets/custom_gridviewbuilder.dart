@@ -20,9 +20,9 @@ Widget customGridViewBuilder(List<String> _list) {
             child: Container(
               height: gridViewContainerHeight,
               width: gridViewContainerWidth,
-              // child: VideoPlayer(
-              //   VideoPlayerController.network(_list[index])..initialize(),
-              // ),
+              child: VideoPlayer(
+                VideoPlayerController.network(_list[index])..initialize(),
+              ),
             ),
             onTap: () {
               Navigator.push(
