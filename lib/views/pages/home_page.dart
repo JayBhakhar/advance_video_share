@@ -1,4 +1,14 @@
-import 'package:advance_video_share/services/mix_status_video_api.dart';
+import 'package:advance_video_share/services/festiveStatus_list.dart';
+import 'package:advance_video_share/services/kidsZone_list.dart';
+import 'package:advance_video_share/services/mixStatusVideo_list.dart';
+import 'package:advance_video_share/services/oldSongsVideo_list.dart';
+import 'package:advance_video_share/services/photoStatus_list.dart';
+import 'package:advance_video_share/services/shortMovieVideo_list.dart';
+import 'package:advance_video_share/views/pages/KidsZone_screen.dart';
+import 'package:advance_video_share/views/pages/MixStatusVideo_screen.dart';
+import 'package:advance_video_share/views/pages/PhotoStatus_screen.dart';
+import 'package:advance_video_share/views/pages/ShortMovieVideo_screen.dart';
+import 'package:advance_video_share/views/pages/play_video_landscape.dart';
 import 'package:advance_video_share/views/widgets/home_page_drawer.dart';
 import 'package:advance_video_share/views/widgets/main_category_title.dart';
 import 'package:flutter/material.dart';
@@ -18,35 +28,56 @@ class _HomePageState extends State<HomePage> {
     'Kids Zone', // 0/5
     'Old Songs Video', // 0/6
     'Photo Status', // 0/7
-    'Create Your Own Video' // 0/8
+    'Create Your Own Video'
   ];
-  List urlList = [];
 
-  final List photos = [
-    'a',
-    'a',
-    'a',
-    'a',
-  ];
+  final List<String> mixStatusVideoUrlList = [];
+  final List<String> shortMovieVideoUrlList = [];
+  final List<String> festiveStatusUrlList = [];
+  final List<String> kindsZoneUrlList = [];
+  final List<String> oldSongsVideoUrlList = [];
+  final List<String> photoStatusUrlList = [];
+  final List<String> createYourOwnVideoUrlList = [];
 
   VideoPlayerController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.network(
-        'http://alakshyatechno.tech/video/trending1.mp4')
-      ..initialize().then((_) {
-        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
-        setState(() {});
+    MixStatusVideo().getlistAll().then((List<String> _list) {
+      setState(() {
+        mixStatusVideoUrlList.addAll(_list);
       });
+    });
+    ShortMovieVideo().getlistAll().then((List<String> _list) {
+      setState(() {
+        shortMovieVideoUrlList.addAll(_list);
+      });
+    });
+    FestiveStatus().getlistAll().then((List<String> _list) {
+      setState(() {
+        festiveStatusUrlList.addAll(_list);
+      });
+    });
+    KidsZone().getlistAll().then((List<String> _list) {
+      setState(() {
+        kindsZoneUrlList.addAll(_list);
+      });
+    });
+    OldSongsVideo().getlistAll().then((List<String> _list) {
+      setState(() {
+        oldSongsVideoUrlList.addAll(_list);
+      });
+    });
+    PhotoStatus().getlistAll().then((List<String> _list) {
+      setState(() {
+        photoStatusUrlList.addAll(_list);
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    MixStatusVideo().getlist().then((List _list) {
-      print(_list);
-    });
     return Scaffold(
       appBar: AppBar(
         title: Text('Everyday Status, Businesscard, photo & video status'),
@@ -56,82 +87,62 @@ class _HomePageState extends State<HomePage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Column(
-                children: <Widget>[
-                  MainCategoryTitle(
-                    titleText: "Make Your Business Card Status",
-                    onPressed: () {},
-                  ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        InkWell(
-                          child: Container(
-                            margin: EdgeInsets.all(5),
-                            height: 100,
-                            width: 100,
-                            color: Colors.amberAccent,
-                            child: Image.asset('assets/photos/09.jpg'),
-                          ),
-                          onTap: () {},
-                        ),
-                        Container(
-                          margin: EdgeInsets.all(5),
-                          height: 100,
-                          width: 60,
-                          color: Colors.amberAccent,
-                        ),
-                        Container(
-                          margin: EdgeInsets.all(5),
-                          height: 100,
-                          width: 60,
-                          color: Colors.amberAccent,
-                        ),
-                        Container(
-                          margin: EdgeInsets.all(5),
-                          height: 100,
-                          width: 60,
-                          color: Colors.amberAccent,
-                        ),
-                        Container(
-                          margin: EdgeInsets.all(5),
-                          height: 100,
-                          width: 60,
-                          color: Colors.amberAccent,
-                        ),
-                        Container(
-                          margin: EdgeInsets.all(5),
-                          height: 100,
-                          width: 60,
-                          color: Colors.amberAccent,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+              TextButton(
+                onPressed: () {},
+                child: Text('Make Your Business Card Status'),
               ),
               MainCategoryTitle(
                 titleText: 'Mix Status Video',
-                onPressed: () {},
-              ),
-              Row(
-                children: [
-                  InkWell(
-                    onTap: () {
-                      _controller.play();
-                    },
-                    onDoubleTap: () {
-                      _controller.pause();
-                    },
-                    child: Container(
-                      height: 200,
-                      width: 140,
-                      child: VideoPlayer(VideoPlayerController.network(
-                          'http://alakshyatechno.tech/video/trending1.mp4')..initialize()),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MixStatusVideoScreen(),
                     ),
-                  )
-                ],
+                  );
+                },
+              ),
+              horizotalContainer(mixStatusVideoUrlList, context),
+              MainCategoryTitle(
+                  titleText: 'Short Movie Video',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ShortMovieVideoScreen(),
+                      ),
+                    );
+                  }),
+              horizotalContainer(shortMovieVideoUrlList, context),
+              MainCategoryTitle(titleText: 'Festive Status', onPressed: () {}),
+              horizotalContainer(festiveStatusUrlList, context),
+              MainCategoryTitle(
+                  titleText: 'Kids Zone',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => KindsZoneScreen(),
+                      ),
+                    );
+                  }),
+              horizotalContainer(kindsZoneUrlList, context),
+              MainCategoryTitle(titleText: 'Old Songs Video', onPressed: () {}),
+              horizotalContainer(oldSongsVideoUrlList, context),
+              MainCategoryTitle(
+                  titleText: 'Photo Status',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PhotoStatusScreen(),
+                      ),
+                    );
+                  }),
+              horizotalContainer(photoStatusUrlList, context),
+              TextButton(
+                onPressed: () {},
+                child: Text('Create Your Own Video'),
               )
             ],
           ),
@@ -147,6 +158,38 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+Widget horizotalContainer(List<String> videoUrlList, BuildContext context) {
+  return SingleChildScrollView(
+    scrollDirection: Axis.horizontal,
+    child: Row(
+      mainAxisSize: MainAxisSize.max,
+      children: List<Widget>.generate(videoUrlList.length, (int index1) {
+        return Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: InkWell(
+            child: Container(
+              height: 200,
+              width: 140,
+              child: VideoPlayer(
+                VideoPlayerController.network(videoUrlList[index1])
+                  ..initialize(),
+              ),
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      PlayVideoLandscape(videoUrlList[index1]),
+                ),
+              );
+            },
+          ),
+        );
+      }),
+    ),
+  );
+}
 
 // NetworkImage(
 //                                       'http://alakshyatechno.tech/video/image/1.png'),
