@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
+import 'package:downloads_path_provider/downloads_path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -22,8 +24,7 @@ class _PlayVideoLandscapeState extends State<PlayVideoLandscape> {
   @override
   void initState() {
     super.initState();
-    IsolateNameServer.registerPortWithName(
-        receivePort.sendPort, "downloadingvideo");
+    IsolateNameServer.registerPortWithName(receivePort.sendPort, "downloadingvideo");
 
     receivePort.listen((message) {
       setState(() {
@@ -33,14 +34,23 @@ class _PlayVideoLandscapeState extends State<PlayVideoLandscape> {
 
     FlutterDownloader.registerCallback(downloadCallback);
 
-    _controller = VideoPlayerController.network(widget.videoUrl);
-    _controller.addListener(() {
-      setState(() {});
-    });
+    // _controller = VideoPlayerController.network(widget.videoUrl);
+    // _controller.addListener(() {
+    //   setState(() {});
+    // });
+    //
+    // _controller.setLooping(true);
+    // _controller.initialize().then((_) => setState(() {
+    //   _controller.play();
+    // }));
 
-    _controller.setLooping(true);
-    _controller.initialize().then((_) => setState(() {}));
-    _controller.play();
+    _controller = VideoPlayerController.network(widget.videoUrl)
+      ..initialize().then((_) {
+        setState(() {
+            _controller.play();
+        });  //when your thumbnail will show.
+      });
+
   }
 
   static downloadCallback(id, status, progess) {
@@ -51,10 +61,19 @@ class _PlayVideoLandscapeState extends State<PlayVideoLandscape> {
   void _downloadFile() async {
     final status = await Permission.storage.request();
     if (status.isGranted) {
-      final baseStorage = await getDownloadsDirectory();
-      print('+++++++++++++++++++++++++++++++++ ${baseStorage.path}');
+      String _localPath = (await DownloadsPathProvider.downloadsDirectory).path; // temp comment
+      print("LOCAL path==" + _localPath);
+      final savedDir = Directory(_localPath);
+      bool hasExisted = await savedDir.exists();
+      if (!hasExisted) {
+        savedDir.create();
+      }
+      print('+++++++++++++++++++++++++++++++++ ${_localPath}');
       final id = await FlutterDownloader.enqueue(
-          url: widget.videoUrl, savedDir: baseStorage.path);
+          url: widget.videoUrl, savedDir: _localPath,
+          showNotification: true,
+          openFileFromNotification: true
+          );
     } else {
       print('No permission');
     }
@@ -81,7 +100,7 @@ class _PlayVideoLandscapeState extends State<PlayVideoLandscape> {
               onPressed: () {
                 _downloadFile();
               },
-              child: Icon(Icons.download_done_rounded),
+              child: Icon(Icons.download_sharp),
             ),
             SizedBox(
               height: 5,

@@ -71,6 +71,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.3"
+  downloads_path_provider:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "1532c49bd6000dc895ff06f2450a654d2d83e1c2"
+      url: "git://github.com/SwatiBhakhar/downloads_path_provider.git"
+    source: git
+    version: "0.1.0"
   fake_async:
     dependency: transitive
     description:
@@ -301,6 +310,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.0"
+  thumbnails:
+    dependency: "direct main"
+    description:
+      name: thumbnails
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
   typed_data:
     dependency: transitive
     description:

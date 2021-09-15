@@ -29,10 +29,14 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   http: ^0.13.3
-  video_player: ^2.1.14
+  video_player:
   flutter_downloader: ^1.6.1
   path_provider: ^2.0.2
   permission_handler: ^8.1.4+2
+  thumbnails: ^1.0.1
+  downloads_path_provider:
+    git:
+      url: git://github.com/SwatiBhakhar/downloads_path_provider.git
   
 dev_dependencies:
   flutter_test:

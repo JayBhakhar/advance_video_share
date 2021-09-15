@@ -84,67 +84,71 @@ class _HomePageState extends State<HomePage> {
       ),
       drawer: homePageDrawer(),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              TextButton(
-                onPressed: () {},
-                child: Text('Make Your Business Card Status'),
-              ),
-              MainCategoryTitle(
-                titleText: 'Mix Status Video',
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MixStatusVideoScreen(),
-                    ),
-                  );
-                },
-              ),
-              horizotalContainer(mixStatusVideoUrlList, context),
-              MainCategoryTitle(
-                  titleText: 'Short Movie Video',
+
+        child: Container(
+          color:  Colors.black,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextButton(
+                  onPressed: () {},
+                  child: Text('Make Your Business Card Status'),
+                ),
+                MainCategoryTitle(
+                  titleText: 'Mix Status Video',
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ShortMovieVideoScreen(),
+                        builder: (context) => MixStatusVideoScreen(),
                       ),
                     );
-                  }),
-              horizotalContainer(shortMovieVideoUrlList, context),
-              MainCategoryTitle(titleText: 'Festive Status', onPressed: () {}),
-              horizotalContainer(festiveStatusUrlList, context),
-              MainCategoryTitle(
-                  titleText: 'Kids Zone',
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => KindsZoneScreen(),
-                      ),
-                    );
-                  }),
-              horizotalContainer(kindsZoneUrlList, context),
-              MainCategoryTitle(titleText: 'Old Songs Video', onPressed: () {}),
-              horizotalContainer(oldSongsVideoUrlList, context),
-              MainCategoryTitle(
-                  titleText: 'Photo Status',
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PhotoStatusScreen(),
-                      ),
-                    );
-                  }),
-              horizotalContainer(photoStatusUrlList, context),
-              TextButton(
-                onPressed: () {},
-                child: Text('Create Your Own Video'),
-              )
-            ],
+                  },
+                ),
+                horizotalContainer(mixStatusVideoUrlList, context),
+                MainCategoryTitle(
+                    titleText: 'Short Movie Video',
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ShortMovieVideoScreen(),
+                        ),
+                      );
+                    }),
+                horizotalContainer(shortMovieVideoUrlList, context),
+                MainCategoryTitle(titleText: 'Festive Status', onPressed: () {}),
+                horizotalContainer(festiveStatusUrlList, context),
+                MainCategoryTitle(
+                    titleText: 'Kids Zone',
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => KindsZoneScreen(),
+                        ),
+                      );
+                    }),
+                horizotalContainer(kindsZoneUrlList, context),
+                MainCategoryTitle(titleText: 'Old Songs Video', onPressed: () {}),
+                horizotalContainer(oldSongsVideoUrlList, context),
+                MainCategoryTitle(
+                    titleText: 'Photo Status',
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PhotoStatusScreen(),
+                        ),
+                      );
+                    }),
+                horizotalContainer(photoStatusUrlList, context),
+                TextButton(
+                  onPressed: () {},
+                  child: Text('Create Your Own Video'),
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -170,10 +174,16 @@ Widget horizotalContainer(List<String> videoUrlList, BuildContext context) {
             child: Container(
               height: 200,
               width: 140,
-              child: VideoPlayer(
-                VideoPlayerController.network(videoUrlList[index1])
-                  ..initialize(),
-              ),
+              decoration: BoxDecoration(
+                  image: new DecorationImage(
+                      fit: BoxFit.fill,
+                      image: new NetworkImage("https://i.pinimg.com/originals/85/97/ed/8597ed8d35b193f4db7145c7fd0d56a2.jpg")),
+                  color: Colors.green,
+                  borderRadius: BorderRadius.circular(8.0)),
+              // child: VideoPlayer(
+              //   VideoPlayerController.network(videoUrlList[index1])
+              //     ..initialize(),
+              // ),
             ),
             onTap: () {
               Navigator.push(
