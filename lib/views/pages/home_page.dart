@@ -183,7 +183,7 @@ Widget horizotalContainer(List<String> videoUrlList, BuildContext context) {
               // child: VideoPlayer(
               //   VideoPlayerController.network(videoUrlList[index1])
               //     ..initialize(),
-              // ),
+              // ), // thumbnail url
             ),
             onTap: () {
               Navigator.push(

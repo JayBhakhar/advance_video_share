@@ -6,6 +6,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:video_player/video_player.dart';
+import 'package:http/http.dart';
+import 'package:share/share.dart';
 import 'package:path_provider/path_provider.dart';
 
 class PlayVideoLandscape extends StatefulWidget {
@@ -24,7 +26,8 @@ class _PlayVideoLandscapeState extends State<PlayVideoLandscape> {
   @override
   void initState() {
     super.initState();
-    IsolateNameServer.registerPortWithName(receivePort.sendPort, "downloadingvideo");
+    IsolateNameServer.registerPortWithName(
+        receivePort.sendPort, "downloadingvideo");
 
     receivePort.listen((message) {
       setState(() {
@@ -47,10 +50,9 @@ class _PlayVideoLandscapeState extends State<PlayVideoLandscape> {
     _controller = VideoPlayerController.network(widget.videoUrl)
       ..initialize().then((_) {
         setState(() {
-            _controller.play();
-        });  //when your thumbnail will show.
+          _controller.play();
+        }); //when your thumbnail will show.
       });
-
   }
 
   static downloadCallback(id, status, progess) {
@@ -61,7 +63,8 @@ class _PlayVideoLandscapeState extends State<PlayVideoLandscape> {
   void _downloadFile() async {
     final status = await Permission.storage.request();
     if (status.isGranted) {
-      String _localPath = (await DownloadsPathProvider.downloadsDirectory).path; // temp comment
+      String _localPath =
+          (await DownloadsPathProvider.downloadsDirectory).path; // temp comment
       print("LOCAL path==" + _localPath);
       final savedDir = Directory(_localPath);
       bool hasExisted = await savedDir.exists();
@@ -70,12 +73,33 @@ class _PlayVideoLandscapeState extends State<PlayVideoLandscape> {
       }
       print('+++++++++++++++++++++++++++++++++ ${_localPath}');
       final id = await FlutterDownloader.enqueue(
-          url: widget.videoUrl, savedDir: _localPath,
+          url: widget.videoUrl,
+          savedDir: _localPath,
           showNotification: true,
-          openFileFromNotification: true
-          );
+          openFileFromNotification: true);
     } else {
       print('No permission');
+    }
+  }
+
+  Future<Null> urlFileShare() async {
+    final RenderBox box = context.findRenderObject();
+    if (Platform.isAndroid) {
+      var url = widget.videoUrl;
+      var response = await get(Uri.parse(url));
+      final documentDirectory = (await getExternalStorageDirectory()).path;
+      File imgFile = File('$documentDirectory/video.mp4');
+      imgFile.writeAsBytesSync(response.bodyBytes);
+
+      Share.shareFiles(['$documentDirectory/video.mp4'],
+          subject: 'URL File Share', // app nu name rakhi sakay
+          text:
+              'Hello, check your share files!', //  playstore link with some ads words
+          sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+    } else {
+      Share.share('Hello, check your share files!',
+          subject: 'URL File Share',
+          sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
     }
   }
 
@@ -106,18 +130,17 @@ class _PlayVideoLandscapeState extends State<PlayVideoLandscape> {
               height: 5,
             ),
             FloatingActionButton(
-              onPressed: () {},
-              child: Icon(Icons.ac_unit_outlined),
+              onPressed: () async {
+                urlFileShare();
+              },
+              child: Icon(Icons.share),
             ),
             SizedBox(
               height: 5,
             ),
             FloatingActionButton(
               onPressed: () {},
-              child: Icon(Icons.access_alarm),
-            ),
-            SizedBox(
-              height: 5,
+              child: Icon(Icons.accessible_forward_rounded),
             ),
             FloatingActionButton(
               onPressed: () {},
