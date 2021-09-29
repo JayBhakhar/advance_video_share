@@ -34,6 +34,7 @@ dependencies:
   path_provider: ^2.0.2
   permission_handler: ^8.1.4+2
   syncfusion_flutter_datepicker: ^19.2.62
+  share: ^2.0.4
   downloads_path_provider:
     git:
       url: git://github.com/SwatiBhakhar/downloads_path_provider.git
