@@ -1,17 +1,22 @@
 import 'package:advance_video_share/consts/constants.dart';
 import 'package:advance_video_share/services/mixStatusVideo_list.dart';
-import 'package:advance_video_share/views/pages/play_video_landscape.dart';
 import 'package:advance_video_share/views/widgets/custom_gridviewbuilder.dart';
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 
 class MixStatusVideoScreen extends StatefulWidget {
+  String categoryType;
+
+  MixStatusVideoScreen({Key key, this.categoryType}) : super(key: key);
+
   @override
   _MixStatusVideoScreenState createState() => _MixStatusVideoScreenState();
 }
 
 class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
-  final List<String> subcategory = [
+  String categoryIcon = "";
+  final List<String> subcategory = [];
+  final List<String> subcategoryFestive = ['all'];
+  final List<String> subcategoryMix = [
     'all',
     'action',
     'bgm',
@@ -33,135 +38,54 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
     'trending'
   ];
 
+  final List<String> subcategoryKidZone = [
+    'all', // 0/5
+    'alladin', //6
+    'animal', //5
+    'chotta bhim', //1/5
+    'duck tales', //7
+    'jungle book', //8
+    'jurassic park', //10
+    'motu patlu', //2/5
+    'mr bean', //4
+    'talking tom', //9
+    'tom and jerry', //3
+  ];
+
+  final List<String> subcategoryPhotoStatus = [
+    'all',
+    'business',
+    'festival',
+    'friendship',
+    'god',
+    'love',
+    'mix',
+    'mother',
+    'motivation',
+    'navratri',
+    'romantic',
+    'sad',
+    'shayri',
+  ];
+
+  final List<String> subcategoryShortVideo = ['all', 'action', 'bgm', 'cartoon', 'comedy', 'dance', 'horror', 'romantic', 'sad', 'trending'];
+
   final List<String> mixStatusVideoAll = [];
-  final List<String> action = [];
-  final List<String> bgm = [];
-  final List<String> bikeLover = [];
-  final List<String> carLover = [];
-  final List<String> comedy = [];
-  final List<String> dance = [];
-  final List<String> festival = [];
-  final List<String> garba = [];
-  final List<String> god = [];
-  final List<String> horror = [];
-  final List<String> love = [];
-  final List<String> mother = [];
-  final List<String> nature = [];
-  final List<String> roadTrip = [];
-  final List<String> romantic = [];
-  final List<String> sad = [];
-  final List<String> sport = [];
-  final List<String> trending = [];
-
   int subcategoryIndex = 0;
-
-  VideoPlayerController _controller;
 
   @override
   void initState() {
     super.initState();
-    MixStatusVideo().getlistAll().then((List<String> _list) {
-      setState(() {
-        mixStatusVideoAll.addAll(_list);
-      });
-    });
-    MixStatusVideo().getlistAction().then((List<String> _list) {
-      setState(() {
-        action.addAll(_list);
-      });
-    });
-    MixStatusVideo().getlistBgm().then((List<String> _list) {
-      setState(() {
-        bgm.addAll(_list);
-      });
-    });
-    MixStatusVideo().getlistBikeLover().then((List<String> _list) {
-      setState(() {
-        bikeLover.addAll(_list);
-      });
-    });
-    MixStatusVideo().getlistCarLover().then((List<String> _list) {
-      setState(() {
-        carLover.addAll(_list);
-      });
-    });
-    MixStatusVideo().getlistComedy().then((List<String> _list) {
-      setState(() {
-        comedy.addAll(_list);
-      });
-    });
-    MixStatusVideo().getlistDance().then((List<String> _list) {
-      setState(() {
-        dance.addAll(_list);
-      });
-    });
-    MixStatusVideo().getlistFestival().then((List<String> _list) {
-      setState(() {
-        festival.addAll(_list);
-      });
-    });
-    MixStatusVideo().getlistGarba().then((List<String> _list) {
-      setState(() {
-        garba.addAll(_list);
-      });
-    });
-    MixStatusVideo().getlistGod().then((List<String> _list) {
-      setState(() {
-        god.addAll(_list);
-      });
-    });
-    MixStatusVideo().getlistHorror().then((List<String> _list) {
-      setState(() {
-        horror.addAll(_list);
-      });
-    });
-    MixStatusVideo().getlistLove().then((List<String> _list) {
-      setState(() {
-        love.addAll(_list);
-      });
-    });
-    MixStatusVideo().getlistMother().then((List<String> _list) {
-      setState(() {
-        mother.addAll(_list);
-      });
-    });
-    MixStatusVideo().getlistNature().then((List<String> _list) {
-      setState(() {
-        nature.addAll(_list);
-      });
-    });
-    MixStatusVideo().getlistRoadTrip().then((List<String> _list) {
-      setState(() {
-        roadTrip.addAll(_list);
-      });
-    });
-    MixStatusVideo().getlistRomantic().then((List<String> _list) {
-      setState(() {
-        romantic.addAll(_list);
-      });
-    });
-    MixStatusVideo().getlistSad().then((List<String> _list) {
-      setState(() {
-        sad.addAll(_list);
-      });
-    });
-    MixStatusVideo().getlistSport().then((List<String> _list) {
-      setState(() {
-        sport.addAll(_list);
-      });
-    });
-    MixStatusVideo().getlistTrending().then((List<String> _list) {
-      setState(() {
-        trending.addAll(_list);
-      });
-    });
+    getCategory();
+    getCategoryVideoList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xFF8B0000),
         title: TextField(
           onTap: () {
             showSearch(
@@ -171,124 +95,320 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
           },
           decoration: InputDecoration(
             hintText: 'Search',
+            hintStyle: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
             border: InputBorder.none,
-            contentPadding: EdgeInsets.symmetric(vertical: 15.0),
+            contentPadding: EdgeInsets.symmetric(vertical: 5.0),
           ),
         ),
         automaticallyImplyLeading: false,
-        leading: Icon(
-          Icons.search,
-          color: Colors.black,
+        leading: Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Image.asset(
+            'assets/icon/icon.png',
+            width: 32,
+          ),
         ),
         actions: <Widget>[
-          Image.asset(
-            'assets/icon/icon.png',
-            width: 50,
-          )
+          Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Icon(
+              Icons.search,
+              color: Colors.white,
+            ),
+          ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(height: 5),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                children:
-                    List<Widget>.generate(subcategory.length, (int index) {
-                  return InkWell(
-                    onTap: () {
-                      setState(() {
-                        subcategoryIndex = index;
-                      });
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(2.0),
-                      child: Container(
-                        height: subcategoryConatainerHeight,
-                        width: subcategoryConatainerWidth,
-                        // color: Colors.amberAccent,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: Container(
-                                height: subcategoryImageHeight,
-                                child: Image.asset(
-                                    'assets/icon/mix_status_icon/${subcategory[index]}.png'),
-                              ),
-                            ),
-                            Text(
-                              subcategory[index],
-                              style: subcategoryTextStyle,
-                            ),
-                          ],
-                        ),
+      body: Column(
+        children: [
+          SizedBox(height: 12),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: List<Widget>.generate(subcategory.length, (int index) {
+                return InkWell(
+                  onTap: () {
+                    setState(() {
+                      subcategoryIndex = index;
+                      getCategoryVideoList();
+                    });
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 7.0, right: 7.0),
+                    child: Container(
+                      // height: subcategoryConatainerHeight,
+                      // width: subcategoryConatainerWidth,
+                      // color: Colors.amberAccent,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            child: Image.asset('$categoryIcon${subcategory[index]}.png', height: subcategoryImageHeight,fit: BoxFit.fitWidth,),
+                          ),
+                          SizedBox(
+                            height: 6.0,
+                          ),
+                          Text(
+                            subcategory[index],
+                            style: subcategoryTextStyle,
+                            maxLines: 2,
+                          ),
+                        ],
                       ),
                     ),
-                  );
-                }),
-              ),
+                  ),
+                );
+              }),
             ),
-            SizedBox(
-              height: 2,
-            ),
-            Builder(
-              builder: (BuildContext context) {
-                if (subcategoryIndex == 0) {
-                  return customGridViewBuilder(mixStatusVideoAll);
-                } else if (subcategoryIndex == 1) {
-                  return customGridViewBuilder(action);
-                } else if (subcategoryIndex == 2) {
-                  return customGridViewBuilder(bgm);
-                } else if (subcategoryIndex == 3) {
-                  return customGridViewBuilder(bikeLover);
-                } else if (subcategoryIndex == 4) {
-                  return customGridViewBuilder(carLover);
-                } else if (subcategoryIndex == 5) {
-                  return customGridViewBuilder(comedy);
-                } else if (subcategoryIndex == 6) {
-                  return customGridViewBuilder(dance);
-                } else if (subcategoryIndex == 7) {
-                  return customGridViewBuilder(festival);
-                } else if (subcategoryIndex == 8) {
-                  return customGridViewBuilder(garba);
-                } else if (subcategoryIndex == 9) {
-                  return customGridViewBuilder(god);
-                } else if (subcategoryIndex == 10) {
-                  return customGridViewBuilder(horror);
-                } else if (subcategoryIndex == 11) {
-                  return customGridViewBuilder(love);
-                } else if (subcategoryIndex == 12) {
-                  return customGridViewBuilder(mother);
-                } else if (subcategoryIndex == 13) {
-                  return customGridViewBuilder(nature);
-                } else if (subcategoryIndex == 14) {
-                  return customGridViewBuilder(roadTrip);
-                } else if (subcategoryIndex == 15) {
-                  return customGridViewBuilder(romantic);
-                } else if (subcategoryIndex == 16) {
-                  return customGridViewBuilder(sad);
-                } else if (subcategoryIndex == 17) {
-                  return customGridViewBuilder(sport);
-                } else if (subcategoryIndex == 18) {
-                  return customGridViewBuilder(trending);
-                }
-                return Container();
-              },
-            ),
-          ],
-        ),
+          ),
+          SizedBox(
+            height: 8,
+          ),
+          Expanded(child: customGridViewBuilder(mixStatusVideoAll))
+        ],
       ),
     );
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    _controller.dispose();
+  void getCategoryVideoList() {
+    String categoryType = "";
+    if (widget.categoryType == mixStatusVideo) {
+      switch (subcategoryIndex) {
+        case 0:
+          categoryType = categoryListAll;
+          break;
+        case 1:
+          categoryType = actionCategory;
+          break;
+        case 2:
+          categoryType = bgmCategory;
+          break;
+        case 3:
+          categoryType = bikeLoverCategory;
+          break;
+        case 4:
+          categoryType = carLoverCategory;
+          break;
+        case 5:
+          categoryType = comedyCategory;
+          break;
+        case 6:
+          categoryType = danceCategory;
+          break;
+        case 7:
+          categoryType = festivalCategory;
+          break;
+        case 8:
+          categoryType = garbaCategory;
+          break;
+        case 9:
+          categoryType = godCategory;
+          break;
+        case 10:
+          categoryType = horrorCategory;
+          break;
+        case 11:
+          categoryType = loveCategory;
+          break;
+        case 12:
+          categoryType = motherCategory;
+          break;
+        case 13:
+          categoryType = natureCategory;
+          break;
+        case 14:
+          categoryType = roadTripCategory;
+          break;
+        case 15:
+          categoryType = romanticCategory;
+          break;
+        case 16:
+          categoryType = sadCategory;
+          break;
+        case 17:
+          categoryType = sportCategory;
+          break;
+        case 18:
+          categoryType = trendingCategory;
+          break;
+      }
+    } else if (widget.categoryType == kidsZoneVideo) {
+      switch (subcategoryIndex) {
+        case 0:
+          categoryType = kidZoneMoviesAll;
+          break;
+        case 1:
+          categoryType = kidZoneMoviesAdin;
+          break;
+        case 2:
+          categoryType = kidZoneMoviesAnimal;
+          break;
+        case 3:
+          categoryType = kidZoneMoviesChotabhim;
+          break;
+        case 4:
+          categoryType = kidZoneMoviesDuckTales;
+          break;
+        case 5:
+          categoryType = kidZoneMoviesJungleBook;
+          break;
+        case 6:
+          categoryType = kidZoneMoviesJurassicPark;
+          break;
+        case 7:
+          categoryType = kidZoneMoviesMotuPatlu;
+          break;
+        case 8:
+          categoryType = kidZoneMoviesMrBean;
+          break;
+        case 9:
+          categoryType = kidZoneMoviesTalkingTom;
+          break;
+        case 10:
+          categoryType = kidZoneMoviesTomAndJerry;
+          break;
+      }
+    } else if (widget.categoryType == shortMovieVideo) {
+      switch (subcategoryIndex) {
+        case 0:
+          categoryType = shortMoviesAll;
+          break;
+        case 1:
+          categoryType = shortMovieActionCategory;
+          break;
+        case 2:
+          categoryType = shortMovieBgmCategory;
+          break;
+        case 3:
+          categoryType = shortMovieCartoonCategory;
+          break;
+        case 4:
+          categoryType = shortMovieComedyCategory;
+          break;
+        case 5:
+          categoryType = shortMovieDanceCategory;
+          break;
+        case 6:
+          categoryType = shortMovieHorrorCategory;
+          break;
+        case 7:
+          categoryType = shortMovieRomanticCategory;
+          break;
+        case 8:
+          categoryType = shortMovieSadCategory;
+          break;
+        case 9:
+          categoryType = shortMovieTrendingCategory;
+          break;
+      }
+    } else if (widget.categoryType == festiveVideo) {
+      switch (subcategoryIndex) {
+        case 0:
+          categoryType = festiveMoviesAll;
+          break;
+      }
+    } else if (widget.categoryType == oldSongsVideo) {
+      switch (subcategoryIndex) {
+        case 0:
+          categoryType = OldSongMoviesAll;
+          break;
+      }
+    } else if (widget.categoryType == photoStatusVideo) {
+      switch (subcategoryIndex) {
+        case 0:
+          categoryType = photoStatusAll;
+          break;
+        case 1:
+          categoryType = photoStatusBusiness;
+          break;
+        case 2:
+          categoryType = photoStatusFestival;
+          break;
+        case 3:
+          categoryType = photoStatusFriendship;
+          break;
+        case 4:
+          categoryType = photoStatusGod;
+          break;
+        case 5:
+          categoryType = photoStatusLove;
+          break;
+        case 6:
+          categoryType = photoStatusMix;
+          break;
+        case 7:
+          categoryType = photoStatusMother;
+          break;
+        case 8:
+          categoryType = photoStatusMotivation;
+          break;
+        case 9:
+          categoryType = photoStatusNavratri;
+          break;
+        case 10:
+          categoryType = photoStatusRomantic;
+          break;
+        case 11:
+          categoryType = photoStatusSad;
+          break;
+        case 12:
+          categoryType = photoStatusShayri;
+          break;
+      }
+    }
+
+    MixStatusVideo().getSubCategoryListAll(categoryType).then((List<String> _list) {
+      setState(() {
+        mixStatusVideoAll.clear();
+        mixStatusVideoAll.addAll(_list);
+      });
+    });
+  }
+
+  void getCategory() {
+    subcategory.clear();
+    switch (widget.categoryType) {
+      case mixStatusVideo:
+        setState(() {
+          categoryIcon = "assets/icon/mix_status_icon/";
+          subcategory.addAll(subcategoryMix);
+        });
+        break;
+      case kidsZoneVideo:
+        setState(() {
+          categoryIcon = "assets/icon/kids_zone/";
+          subcategory.addAll(subcategoryKidZone);
+        });
+        break;
+      case shortMovieVideo:
+        setState(() {
+          categoryIcon = "assets/icon/short_movie/";
+          subcategory.addAll(subcategoryShortVideo);
+        });
+        break;
+      case festiveVideo:
+        setState(() {
+          categoryIcon = "assets/icon/mix_status_icon/";
+          subcategory.addAll(subcategoryFestive);
+        });
+        break;
+      case oldSongsVideo:
+        setState(() {
+          categoryIcon = "assets/icon/mix_status_icon/";
+          subcategory.addAll(subcategoryFestive);
+        });
+        break;
+      case photoStatusVideo:
+        setState(() {
+          categoryIcon = "assets/icon/photo_status/";
+          subcategory.addAll(subcategoryPhotoStatus);
+        });
+        break;
+    }
   }
 }
 
@@ -316,6 +436,7 @@ class Search extends SearchDelegate {
   }
 
   String selectedResult = "";
+
   // here need to rebuild
   @override
   Widget buildResults(BuildContext context) {
@@ -327,6 +448,7 @@ class Search extends SearchDelegate {
   }
 
   final List<String> listExample;
+
   Search(this.listExample);
 
   List<String> recentList = ['Action', 'Comedy', 'Garba', 'Nature', 'Sport'];

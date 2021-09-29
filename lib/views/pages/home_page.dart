@@ -1,13 +1,7 @@
-import 'package:advance_video_share/services/festiveStatus_list.dart';
-import 'package:advance_video_share/services/kidsZone_list.dart';
+import 'package:advance_video_share/consts/constants.dart';
 import 'package:advance_video_share/services/mixStatusVideo_list.dart';
-import 'package:advance_video_share/services/oldSongsVideo_list.dart';
-import 'package:advance_video_share/services/photoStatus_list.dart';
-import 'package:advance_video_share/services/shortMovieVideo_list.dart';
-import 'package:advance_video_share/views/pages/KidsZone_screen.dart';
+import 'package:advance_video_share/views/pages/BussinessForm.dart';
 import 'package:advance_video_share/views/pages/MixStatusVideo_screen.dart';
-import 'package:advance_video_share/views/pages/PhotoStatus_screen.dart';
-import 'package:advance_video_share/views/pages/ShortMovieVideo_screen.dart';
 import 'package:advance_video_share/views/pages/play_video_landscape.dart';
 import 'package:advance_video_share/views/widgets/home_page_drawer.dart';
 import 'package:advance_video_share/views/widgets/main_category_title.dart';
@@ -44,54 +38,66 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    MixStatusVideo().getlistAll().then((List<String> _list) {
+    MixStatusVideo().getSubCategoryListAll(categoryListAll).then((List<String> _list) {
       setState(() {
         mixStatusVideoUrlList.addAll(_list);
       });
     });
-    ShortMovieVideo().getlistAll().then((List<String> _list) {
+
+    MixStatusVideo().getSubCategoryListAll(shortMoviesAll).then((List<String> _list) {
       setState(() {
         shortMovieVideoUrlList.addAll(_list);
       });
     });
-    FestiveStatus().getlistAll().then((List<String> _list) {
+
+    MixStatusVideo().getSubCategoryListAll(festiveMoviesAll).then((List<String> _list) {
       setState(() {
         festiveStatusUrlList.addAll(_list);
       });
     });
-    KidsZone().getlistAll().then((List<String> _list) {
+
+    MixStatusVideo().getSubCategoryListAll(kidZoneMoviesAll).then((List<String> _list) {
       setState(() {
         kindsZoneUrlList.addAll(_list);
       });
     });
-    OldSongsVideo().getlistAll().then((List<String> _list) {
+
+    MixStatusVideo().getSubCategoryListAll(OldSongMoviesAll).then((List<String> _list) {
       setState(() {
         oldSongsVideoUrlList.addAll(_list);
       });
     });
-    PhotoStatus().getlistAll().then((List<String> _list) {
+
+    MixStatusVideo().getSubCategoryListAll(photoStatusAll).then((List<String> _list) {
       setState(() {
         photoStatusUrlList.addAll(_list);
       });
     });
+
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Everyday Status, Businesscard, photo & video status'),
+        title: Text('Everyday Status, BusinessCard, photo & video status'),
       ),
       drawer: homePageDrawer(),
       body: SafeArea(
-
         child: Container(
           color:  Colors.black,
           child: SingleChildScrollView(
             child: Column(
               children: [
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BussinessForm(),
+                      ),
+                    );
+                  },
                   child: Text('Make Your Business Card Status'),
                 ),
                 MainCategoryTitle(
@@ -100,7 +106,7 @@ class _HomePageState extends State<HomePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => MixStatusVideoScreen(),
+                        builder: (context) => MixStatusVideoScreen(categoryType: mixStatusVideo),
                       ),
                     );
                   },
@@ -112,12 +118,20 @@ class _HomePageState extends State<HomePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ShortMovieVideoScreen(),
+                          builder: (context) => MixStatusVideoScreen(categoryType: shortMovieVideo),
                         ),
                       );
                     }),
                 horizotalContainer(shortMovieVideoUrlList, context),
-                MainCategoryTitle(titleText: 'Festive Status', onPressed: () {}),
+                MainCategoryTitle(titleText: 'Festive Status',
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MixStatusVideoScreen(categoryType: festiveVideo),
+                        ),
+                      );
+                    }),
                 horizotalContainer(festiveStatusUrlList, context),
                 MainCategoryTitle(
                     titleText: 'Kids Zone',
@@ -125,12 +139,20 @@ class _HomePageState extends State<HomePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => KindsZoneScreen(),
+                          builder: (context) => MixStatusVideoScreen(categoryType: kidsZoneVideo),
+
                         ),
                       );
                     }),
                 horizotalContainer(kindsZoneUrlList, context),
-                MainCategoryTitle(titleText: 'Old Songs Video', onPressed: () {}),
+                MainCategoryTitle(titleText: 'Old Songs Video', onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MixStatusVideoScreen(categoryType: oldSongsVideo),
+                    ),
+                  );
+                }),
                 horizotalContainer(oldSongsVideoUrlList, context),
                 MainCategoryTitle(
                     titleText: 'Photo Status',
@@ -138,7 +160,8 @@ class _HomePageState extends State<HomePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => PhotoStatusScreen(),
+                          builder: (context) => MixStatusVideoScreen(categoryType: photoStatusVideo),
+
                         ),
                       );
                     }),
@@ -168,6 +191,7 @@ Widget horizotalContainer(List<String> videoUrlList, BuildContext context) {
     child: Row(
       mainAxisSize: MainAxisSize.max,
       children: List<Widget>.generate(videoUrlList.length, (int index1) {
+        print("Image url=="+videoUrlList[index1].split("~")[1]);
         return Padding(
           padding: const EdgeInsets.all(4.0),
           child: InkWell(
@@ -176,8 +200,8 @@ Widget horizotalContainer(List<String> videoUrlList, BuildContext context) {
               width: 140,
               decoration: BoxDecoration(
                   image: new DecorationImage(
-                      fit: BoxFit.fill,
-                      image: new NetworkImage("https://i.pinimg.com/originals/85/97/ed/8597ed8d35b193f4db7145c7fd0d56a2.jpg")),
+                      fit: BoxFit.cover,
+                      image: new NetworkImage(videoUrlList[index1].split("~")[1])),
                   color: Colors.green,
                   borderRadius: BorderRadius.circular(8.0)),
               // child: VideoPlayer(
@@ -190,7 +214,7 @@ Widget horizotalContainer(List<String> videoUrlList, BuildContext context) {
                 context,
                 MaterialPageRoute(
                   builder: (context) =>
-                      PlayVideoLandscape(videoUrlList[index1]),
+                      PlayVideoLandscape(videoUrlList[index1].split("~")[0]),
                 ),
               );
             },

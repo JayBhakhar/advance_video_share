@@ -20,15 +20,20 @@ class MainCategoryTitle extends StatelessWidget {
               Image.asset('assets/photos/background_of_text.png'),
               Positioned(
                 top: 14,
-                child: Text(
-                  titleText,
-                  style: Theme.of(context).textTheme.bodyText1,
+                child: Padding(
+                  padding: const EdgeInsets.only(left:8.0),
+                  child: Text(
+                    titleText,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
                 ),
               )
             ],
           ),
           trailing: TextButton(
-            child: Text('See All'),
+            child: Text('See All',style: TextStyle(
+              fontSize: 15.0
+            ),),
             onPressed: onPressed,
           ),
         ),

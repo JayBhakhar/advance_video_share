@@ -17,13 +17,29 @@ Widget customGridViewBuilder(List<String> _list) {
         return Padding(
           padding: const EdgeInsets.all(4.0),
           child: InkWell(
-            child: Container(
-              height: gridViewContainerHeight,
-              width: gridViewContainerWidth,
-              child: VideoPlayer(
-                VideoPlayerController.network(_list[index])..initialize(),
-              ),
+            child:
+            // Container(
+            //   height: gridViewContainerHeight,
+            //   width: gridViewContainerWidth,
+            //   child: VideoPlayer(
+            //     VideoPlayerController.network(_list[index])..initialize(),
+            //   ),
+            // ),
+            Container(
+              height: 200,
+              width: 140,
+              decoration: BoxDecoration(
+                  image: new DecorationImage(
+                      fit: BoxFit.cover,
+                      image: new NetworkImage(_list[index].split("~")[1])),
+                  color: Colors.green,
+                  borderRadius: BorderRadius.circular(8.0)),
+              // child: VideoPlayer(
+              //   VideoPlayerController.network(videoUrlList[index1])
+              //     ..initialize(),
+              // ),
             ),
+
             onTap: () {
               Navigator.push(
                 context,
