@@ -10,7 +10,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _makePath();
+   _makePath();
   }
 
   _makePath() {
@@ -27,12 +27,11 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: SafeArea(
-        child: Column(
+        child: Stack(
+          fit: StackFit.loose,
           children: [
-            SizedBox(
-              height: 250,
-            ),
             Center(
               child: Image.asset(
                 'assets/icon/icon.png',
@@ -40,17 +39,25 @@ class _SplashScreenState extends State<SplashScreen> {
                 height: 175,
               ),
             ),
-            SizedBox(
-              height: 230,
+            Align(
+            alignment: Alignment.bottomCenter,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Everyday Status',
+                    style: /*Theme.of(context).textTheme.bodyText1*/TextStyle(color:  Colors.white,fontSize: 17,fontWeight: FontWeight.bold,),
+                  ),
+                  SizedBox(
+                    height: 4.0,
+                  ),
+                  Text('Business card, photo & video status',style: TextStyle(color:  Colors.white,fontSize: 16),),
+                  SizedBox(
+                    height: 12.0,
+                  )
+                ],
+              ),
             ),
-            Text(
-              'Everyday Status',
-              style: Theme.of(context).textTheme.bodyText1,
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            Text('Business card, photo & video status'),
           ],
         ),
       ),

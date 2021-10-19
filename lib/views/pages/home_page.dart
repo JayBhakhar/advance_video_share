@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:advance_video_share/consts/constants.dart';
 import 'package:advance_video_share/services/mixStatusVideo_list.dart';
 import 'package:advance_video_share/views/pages/BussinessForm.dart';
@@ -5,6 +7,8 @@ import 'package:advance_video_share/views/pages/MixStatusVideo_screen.dart';
 import 'package:advance_video_share/views/pages/play_video_landscape.dart';
 import 'package:advance_video_share/views/widgets/home_page_drawer.dart';
 import 'package:advance_video_share/views/widgets/main_category_title.dart';
+import 'package:advance_video_share/models/listModel.dart';
+import 'package:downloads_path_provider/downloads_path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -33,44 +37,45 @@ class _HomePageState extends State<HomePage> {
   final List<String> photoStatusUrlList = [];
   final List<String> createYourOwnVideoUrlList = [];
 
-  VideoPlayerController _controller;
+  // VideoPlayerController _controller;
+  String page = "1";
 
   @override
   void initState() {
     super.initState();
-    MixStatusVideo().getSubCategoryListAll(categoryListAll).then((List<String> _list) {
+    MixStatusVideo().getSubCategoryListAll(categoryListAll,page).then((ListModel _list) {
       setState(() {
-        mixStatusVideoUrlList.addAll(_list);
+        mixStatusVideoUrlList.addAll(_list.list);
       });
     });
 
-    MixStatusVideo().getSubCategoryListAll(shortMoviesAll).then((List<String> _list) {
+    MixStatusVideo().getSubCategoryListAll(shortMoviesAll,page).then((ListModel _list) {
       setState(() {
-        shortMovieVideoUrlList.addAll(_list);
+        shortMovieVideoUrlList.addAll(_list.list);
       });
     });
 
-    MixStatusVideo().getSubCategoryListAll(festiveMoviesAll).then((List<String> _list) {
+    MixStatusVideo().getSubCategoryListAll(festiveMoviesAll,page).then((ListModel _list) {
       setState(() {
-        festiveStatusUrlList.addAll(_list);
+        festiveStatusUrlList.addAll(_list.list);
       });
     });
 
-    MixStatusVideo().getSubCategoryListAll(kidZoneMoviesAll).then((List<String> _list) {
+    MixStatusVideo().getSubCategoryListAll(kidZoneMoviesAll,page).then((ListModel _list) {
       setState(() {
-        kindsZoneUrlList.addAll(_list);
+        kindsZoneUrlList.addAll(_list.list);
       });
     });
 
-    MixStatusVideo().getSubCategoryListAll(OldSongMoviesAll).then((List<String> _list) {
+    MixStatusVideo().getSubCategoryListAll(OldSongMoviesAll,page).then((ListModel _list) {
       setState(() {
-        oldSongsVideoUrlList.addAll(_list);
+        oldSongsVideoUrlList.addAll(_list.list);
       });
     });
 
-    MixStatusVideo().getSubCategoryListAll(photoStatusAll).then((List<String> _list) {
+    MixStatusVideo().getSubCategoryListAll(photoStatusAll,page).then((ListModel _list) {
       setState(() {
-        photoStatusUrlList.addAll(_list);
+        photoStatusUrlList.addAll(_list.list);
       });
     });
 
@@ -79,10 +84,11 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
         title: Text('Everyday Status, BusinessCard, photo & video status'),
       ),
-      drawer: homePageDrawer(),
+      drawer: homePageDrawer(context),
       body: SafeArea(
         child: Container(
           color:  Colors.black,
@@ -181,7 +187,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     super.dispose();
-    _controller.dispose();
   }
 }
 
@@ -191,7 +196,7 @@ Widget horizotalContainer(List<String> videoUrlList, BuildContext context) {
     child: Row(
       mainAxisSize: MainAxisSize.max,
       children: List<Widget>.generate(videoUrlList.length, (int index1) {
-        print("Image url=="+videoUrlList[index1].split("~")[1]);
+       // print("Image url=="+"index="+index1.toString()+"==="+videoUrlList[index1].split("~")[1]);
         return Padding(
           padding: const EdgeInsets.all(4.0),
           child: InkWell(
@@ -199,22 +204,36 @@ Widget horizotalContainer(List<String> videoUrlList, BuildContext context) {
               height: 200,
               width: 140,
               decoration: BoxDecoration(
-                  image: new DecorationImage(
-                      fit: BoxFit.cover,
-                      image: new NetworkImage(videoUrlList[index1].split("~")[1])),
-                  color: Colors.green,
+
+                  color: Colors.white24,
                   borderRadius: BorderRadius.circular(8.0)),
               // child: VideoPlayer(
               //   VideoPlayerController.network(videoUrlList[index1])
               //     ..initialize(),
               // ), // thumbnail url
+               child: ClipRRect(
+                borderRadius: BorderRadius.circular(8.0),
+            child: Image.network(videoUrlList[index1].split("~")[1],fit: BoxFit.fill,
+              loadingBuilder:(BuildContext context, Widget child,ImageChunkEvent loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Center(
+                  child: CircularProgressIndicator(
+                    backgroundColor: Colors.white,
+                    // value: loadingProgress.expectedTotalBytes != null ?
+                    // loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
+                    //     : null,
+                  ),
+                );
+              },
+            ),
+          ),
             ),
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) =>
-                      PlayVideoLandscape(videoUrlList[index1].split("~")[0]),
+                      PlayVideoLandscape(videoUrl: videoUrlList[index1],videoUrls: videoUrlList),
                 ),
               );
             },

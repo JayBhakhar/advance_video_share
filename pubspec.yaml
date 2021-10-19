@@ -29,16 +29,36 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   http: ^0.13.3
-  video_player:
-  flutter_downloader: ^1.6.1
+  video_player: '>=0.10.11+1 <2.0.0'
+#  flutter_downloader: ^1.6.1
   path_provider: ^2.0.2
   permission_handler: ^8.1.4+2
   syncfusion_flutter_datepicker: ^19.2.62
+  shared_preferences: ^2.0.6
   share: ^2.0.4
+#  visibility_detector: ^0.2.0
+  image_picker:
+  dio: 3.0.10
+  whatsapp_share: ^1.1.1
+  lazy_load_scrollview: 1.3.0
+  screenshot: ^1.2.3
+  font_awesome_flutter: ^9.0.0
+
+
+  #  flutter_downloader:
+#    git:
+#      url: git://github.com/SwatiBhakhar/flutter_downloader.git
+
+  flutter_downloader: ^1.7.0
+
   downloads_path_provider:
     git:
       url: git://github.com/SwatiBhakhar/downloads_path_provider.git
-  
+
+
+dependency_overrides:
+  http: ^0.12.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -49,6 +69,8 @@ flutter_icons:
   ios: true
   image_path: "assets/icon/icon.png"
   remove_alpha_ios: true
+
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -69,6 +91,7 @@ flutter:
    -  assets/icon/photo_status/
    -  assets/icon/short_movie/
    -  assets/photos/
+   -  assets/cards/
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -82,17 +105,27 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
+  fonts:
+    - family: fontawesome
+      fonts:
+        - asset: assets/fonts/FontAwesome.otf
+    - family: Pacifico
+      fonts:
+        - asset: assets/fonts/Pacifico-Regular.ttf
+    - family: Source Sans Pro
+      fonts:
+        - asset: assets/fonts/SourceSansPro-Italic.ttf
+    - family: Source Sans Pro Light
+      fonts:
+        - asset: assets/fonts/SourceSansPro-Light.ttf
+    - family: Night Zone
+      fonts:
+        - asset: assets/fonts/Night_Zone.ttf
+    - family: YoungSerif
+      fonts:
+        - asset: assets/fonts/YoungSerif-Regular.otf
+
+
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

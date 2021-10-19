@@ -1,7 +1,9 @@
 import 'package:advance_video_share/consts/constants.dart';
 import 'package:advance_video_share/services/mixStatusVideo_list.dart';
-import 'package:advance_video_share/views/widgets/custom_gridviewbuilder.dart';
+import 'package:advance_video_share/views/pages/play_video_landscape.dart';
 import 'package:flutter/material.dart';
+import 'package:advance_video_share/models/listModel.dart';
+import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 
 class MixStatusVideoScreen extends StatefulWidget {
   String categoryType;
@@ -16,6 +18,8 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
   String categoryIcon = "";
   final List<String> subcategory = [];
   final List<String> subcategoryFestive = ['all'];
+  int page = 1, total = 0;
+  final ScrollController _scrollController = ScrollController(keepScrollOffset: false);
   final List<String> subcategoryMix = [
     'all',
     'action',
@@ -77,7 +81,7 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
   void initState() {
     super.initState();
     getCategory();
-    getCategoryVideoList();
+    getCategoryVideoList(page.toString());
   }
 
   @override
@@ -134,7 +138,9 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
                   onTap: () {
                     setState(() {
                       subcategoryIndex = index;
-                      getCategoryVideoList();
+                      page = 1;
+
+                      getCategoryVideoList(page.toString());
                     });
                   },
                   child: Padding(
@@ -147,7 +153,11 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Container(
-                            child: Image.asset('$categoryIcon${subcategory[index]}.png', height: subcategoryImageHeight,fit: BoxFit.fitWidth,),
+                            child: Image.asset(
+                              '$categoryIcon${subcategory[index]}.png',
+                              height: subcategoryImageHeight,
+                              fit: BoxFit.fitWidth,
+                            ),
                           ),
                           SizedBox(
                             height: 6.0,
@@ -168,13 +178,13 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
           SizedBox(
             height: 8,
           ),
-          Expanded(child: customGridViewBuilder(mixStatusVideoAll))
+          customGridViewBuilder()
         ],
       ),
     );
   }
 
-  void getCategoryVideoList() {
+  void getCategoryVideoList(String page) {
     String categoryType = "";
     if (widget.categoryType == mixStatusVideo) {
       switch (subcategoryIndex) {
@@ -361,10 +371,14 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
       }
     }
 
-    MixStatusVideo().getSubCategoryListAll(categoryType).then((List<String> _list) {
+    MixStatusVideo().getSubCategoryListAll(categoryType, page).then((ListModel _list) {
       setState(() {
-        mixStatusVideoAll.clear();
-        mixStatusVideoAll.addAll(_list);
+        if (page == "1"){
+          _scrollController.jumpTo(0.0);
+          mixStatusVideoAll.clear();
+        }
+        mixStatusVideoAll.addAll(_list.list);
+        total = _list.total;
       });
     });
   }
@@ -409,6 +423,76 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
         });
         break;
     }
+  }
+
+  Widget customGridViewBuilder() {
+
+    return Expanded(
+      child: LazyLoadScrollView(
+        // isLoading: true,
+        // scrollOffset: 100,
+        onEndOfPage: () {
+          print("onEndOfPage  total="+total.toString());
+          mixStatusVideoAll.length < total ? getCategoryVideoList((page = page + 1).toString()) : (){};
+
+        },
+        child: GridView.builder(
+        shrinkWrap: true,
+        physics: AlwaysScrollableScrollPhysics(),
+            controller: _scrollController,
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: 200,
+            childAspectRatio: 0.5,
+            // childAspectRatio: 1,
+            crossAxisSpacing: 1,
+            mainAxisSpacing: 1),
+        itemCount: mixStatusVideoAll.length,
+        itemBuilder: (BuildContext context, index) {
+          return Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: InkWell(
+              child: Container(
+                height: 200,
+                width: 140,
+                decoration: BoxDecoration(
+                    // image: new DecorationImage(fit: BoxFit.cover, image: new NetworkImage(mixStatusVideoAll[index].split("~")[1])),
+                    // image: new DecorationImage(fit: BoxFit.cover, image: new NetworkImage(mixStatusVideoAll[index].split("~")[1])),
+                    color: Colors.white24,
+                    borderRadius: BorderRadius.circular(8.0)
+          ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Image.network(mixStatusVideoAll[index].split("~")[1],fit: BoxFit.fill,
+                        loadingBuilder:(BuildContext context, Widget child,ImageChunkEvent loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Center(
+                            child: CircularProgressIndicator(
+                              backgroundColor: Colors.white,
+                              // value: loadingProgress.expectedTotalBytes != null ?
+                              // loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
+                              //     : null,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PlayVideoLandscape(
+                      videoUrl: mixStatusVideoAll[index],
+                      videoUrls: mixStatusVideoAll,
+                    ),
+                  ),
+                );
+              },
+            ),
+          );
+        }),
+      ),
+    );
   }
 }
 
