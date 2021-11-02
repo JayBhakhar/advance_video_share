@@ -1,18 +1,19 @@
 import 'dart:io';
 
+import 'package:advance_video_share/views/widgets/custom_gridview_card.dart';
 import 'package:advance_video_share/views/widgets/custom_gridviewbuilder2.dart';
 import 'package:downloads_path_provider/downloads_path_provider.dart';
 import 'package:flutter/material.dart';
 
-class DownloadedVideoScreen extends StatefulWidget {
+class DownloadedCardScreen extends StatefulWidget {
 
-  DownloadedVideoScreen({Key key}) : super(key: key);
+  DownloadedCardScreen({Key key}) : super(key: key);
 
   @override
-  _DownloadedVideoScreenState createState() => _DownloadedVideoScreenState();
+  _DownloadedCardScreenState createState() => _DownloadedCardScreenState();
 }
 
-class _DownloadedVideoScreenState extends State<DownloadedVideoScreen> {
+class _DownloadedCardScreenState extends State<DownloadedCardScreen> {
   String categoryIcon = "";
   final List<String> mixStatusVideoAll = [];
 
@@ -34,7 +35,7 @@ class _DownloadedVideoScreenState extends State<DownloadedVideoScreen> {
         ),
         backgroundColor: Color(0xFF8B0000),
         title: Text(
-          "Downloads"
+          "Your Business Card"
         ),
         leading: Padding(
           padding: EdgeInsets.all(8.0),
@@ -50,7 +51,7 @@ class _DownloadedVideoScreenState extends State<DownloadedVideoScreen> {
           SizedBox(
             height: 8,
           ),
-          Expanded(child: customGridViewBuilder2(mixStatusVideoAll,context))
+          Expanded(child: customGridViewCard(mixStatusVideoAll))
         ],
       ),
     );
@@ -59,8 +60,7 @@ class _DownloadedVideoScreenState extends State<DownloadedVideoScreen> {
 
   Future<void> getCategoryVideoList() async {
     // String categoryType = "";
-    // String _localPath = (await DownloadsPathProvider.downloadsDirectory).path + Platform.pathSeparator + 'AdvanceVideoShare'; // temp comment
-    String _localPath = (await DownloadsPathProvider.downloadsDirectory).path.replaceAll("Download","").replaceAll("download", "") + /*Platform.pathSeparator + */'AdvanceVideoShare'; // temp comment
+    String _localPath = (await DownloadsPathProvider.downloadsDirectory).path + Platform.pathSeparator + 'BusinessCard'; // temp comment
     print("LOCAL path==" + _localPath);
     Directory dir = Directory(_localPath);
     String mp3Path = dir.toString();

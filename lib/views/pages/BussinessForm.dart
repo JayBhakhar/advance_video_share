@@ -25,6 +25,8 @@ class _BussinessFormState extends State<BussinessForm> {
   void initState() {
     super.initState();
     prepareCards();
+    getPreference();
+    
   }
 
   void prepareCards() {
@@ -47,6 +49,11 @@ class _BussinessFormState extends State<BussinessForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        shape:  RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(20),
+          ),
+        ),
         title: Text(
           'Everyday Status, BusinessCard, photo & video status',
           maxLines: 2,
@@ -64,9 +71,11 @@ class _BussinessFormState extends State<BussinessForm> {
               height: 12.0,
             ),
             Center(
-              child: Text(
-                'Select Date',
-                style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 16),
+              child: Container(
+                child: Text(
+                  'Select Date',
+                  style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 16),
+                ),
               ),
             ),
             Padding(
@@ -219,6 +228,12 @@ class _BussinessFormState extends State<BussinessForm> {
         //   _rangeCount = args.value.length.toString();
       // }
 
+  }
+
+  Future<void> getPreference() async {
+    final prefs = await SharedPreferences.getInstance();
+    String date =  DateFormat('dd MMM yyyy').format(selectedDate).toString();
+    prefs.setString('date', date);
   }
 
   Future<void> _selectDate(BuildContext context) async {

@@ -15,6 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(
         primaryColor: Color(0xFF8B0000),
+        secondaryHeaderColor:  Color(0xFF8B0000),
         textTheme: TextTheme(
           bodyText1: TextStyle(
             color: Colors.black,
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      title: 'Advance Video Share',
+      title: 'Biz Card- Photo & Video Status',
       home: SplashScreen(), //Splash Screen
       // home: UnitTest(), //Splash Screen
     );

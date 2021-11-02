@@ -6,24 +6,32 @@ import 'package:advance_video_share/views/pages/play_video_landscape2.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
-Widget customGridViewBuilder2(List<String> _list,BuildContext context) {
-  return GridView.count(
+Widget customGridViewCard(List<String> _list) {
+  return GridView.builder(
       shrinkWrap: true,
       physics: ScrollPhysics(),
-    crossAxisCount: 2,
-    childAspectRatio: 0.8,
-      children: List.generate(_list.length, (index) {
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 300,
+          childAspectRatio: 1,
+          // childAspectRatio: 1,
+          crossAxisSpacing: 1,
+          mainAxisSpacing: 1),
+      itemCount: _list.length,
+      itemBuilder: (BuildContext context, index) {
         return Padding(
           padding: const EdgeInsets.all(4.0),
           child: InkWell(
             child:
             Container(
-
+              // height: 150,
+              // width: 140,
+              // width: 140,
               decoration: BoxDecoration(
                   color: Colors.green,
                   borderRadius: BorderRadius.circular(8.0)),
               child: !_list[index].endsWith("mp4")?
-              Image.file(File(_list[index]),   fit: BoxFit.fill,):VideoPlayer(
+              Image.file(File(_list[index]),   height: 150,
+                width: 140,fit: BoxFit.fill,):VideoPlayer(
                 VideoPlayerController.network(_list[index])
                   ..initialize(),
               ),
@@ -38,7 +46,5 @@ Widget customGridViewBuilder2(List<String> _list,BuildContext context) {
             },
           ),
         );
-      }),
-
-      );
+      });
 }

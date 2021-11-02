@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
+import 'package:unicorndial/unicorndial.dart';
 import 'dart:math' as math;
 
 import 'package:whatsapp_share/whatsapp_share.dart'; // import this
@@ -28,6 +29,8 @@ class PlayVideoLandscape2State extends State<PlayVideoLandscape2> {
   bool isVideo = false;
   bool isLoading = true;
   static int currentIndex = 0;
+  var childButtons = List<UnicornButton>();
+
 
   @override
   void initState() {
@@ -43,6 +46,36 @@ class PlayVideoLandscape2State extends State<PlayVideoLandscape2> {
         isVideo = true;
         isLoading = false;
       }
+
+
+      childButtons.add(UnicornButton(
+          hasLabel: true,
+          labelText: "Share",
+          currentButton: FloatingActionButton(
+              onPressed: () {
+                downloadNShare(false);
+              },
+              heroTag: "share",
+              backgroundColor: Colors.redAccent,
+              mini: true,
+              child: Transform(alignment: Alignment.center, transform: Matrix4.rotationY(math.pi), child: Icon(Icons.reply, color: Colors.white, size: 24)))));
+
+      childButtons.add(UnicornButton(
+          hasLabel: true,
+          labelText: "Share to Whatsapp",
+          currentButton: FloatingActionButton(
+            onPressed: () {
+              downloadNShare(true);
+            },
+            heroTag: "wshare",
+            backgroundColor: Colors.redAccent,
+            mini: true,
+            child: Image.asset(
+              'assets/icon/whatsapp.png',
+              width: 24,
+              fit: BoxFit.fitHeight,
+            ),
+          )));
     });
   }
 
@@ -50,7 +83,7 @@ class PlayVideoLandscape2State extends State<PlayVideoLandscape2> {
 
     if (isWhatsApp) {
       await WhatsappShare.shareFile(
-          text: "Check this amazing Advance video share app at google play https://play.google.com/store/apps/details?id=com.cropvideo.advance_video_share",
+          text: "Check this amazing Biz Card- Photo & Video Status app at google play https://play.google.com/store/apps/details?id=com.cropvideo.advance_video_share",
           filePath: [downloadUrl],
           phone: "-"
       );
@@ -59,7 +92,7 @@ class PlayVideoLandscape2State extends State<PlayVideoLandscape2> {
       List<String> imagePaths = [];
       imagePaths.add(downloadUrl);
       Share.shareFiles(imagePaths,
-          text: "Check this amazing Advance video share app at google play " +
+          text: "Check this amazing Biz Card- Photo & Video Status app at google play " +
               "https://play.google.com/store/apps/details?id=com.cropvideo.advance_video_share",
           subject: 'Share video',
           sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size)
@@ -97,50 +130,44 @@ class PlayVideoLandscape2State extends State<PlayVideoLandscape2> {
                 File(downloadUrl),
                 fit: BoxFit.fill,
               )),
-        floatingActionButton:
-        Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            InkWell(
-              onTap: () async {
-                // urlFileShare();
-                downloadNShare(false);
-              },
-              child: Transform(
-                  alignment: Alignment.center,
-                  transform: Matrix4.rotationY(math.pi),
-                  child: Icon(Icons.reply,color: Colors.white,size: 40)),
-            ),
-            // SizedBox(
-            //   height: 16,
-            // ),
-            // InkWell(
-            //   onTap: () {},
-            //   child: Image.asset(
-            //   'assets/icon/repost.png',
-            //   width: 28,
-            //     fit: BoxFit.fitHeight,
-            // ),
-            // ),
-            SizedBox(
-              height: 20,
-            ),
-            InkWell(
-              onTap: () async {
-                // urlFileShare();
-                downloadNShare(true);
-              },
-              child: Image.asset(
-                'assets/icon/whatsapp.png',
-                width: 32,
-                fit: BoxFit.fitHeight,
-              ),
-            ),
-            SizedBox(
-              height: 24,
-            ),
-          ],
-        )
+        floatingActionButton: UnicornDialer(
+          backgroundColor: Color.fromRGBO(255, 255, 255, 0.6),
+        parentButtonBackground: Colors.redAccent,
+        orientation: UnicornOrientation.VERTICAL,
+        parentButton: Icon(Icons.add),
+        childButtons: childButtons),
+        // Column(
+        //   mainAxisAlignment: MainAxisAlignment.end,
+        //   children: [
+        //     InkWell(
+        //       onTap: () async {
+        //         // urlFileShare();
+        //         downloadNShare(false);
+        //       },
+        //       child: Transform(
+        //           alignment: Alignment.center,
+        //           transform: Matrix4.rotationY(math.pi),
+        //           child: Icon(Icons.reply,color: Colors.white,size: 40)),
+        //     ),
+        //     SizedBox(
+        //       height: 20,
+        //     ),
+        //     InkWell(
+        //       onTap: () async {
+        //         // urlFileShare();
+        //         downloadNShare(true);
+        //       },
+        //       child: Image.asset(
+        //         'assets/icon/whatsapp.png',
+        //         width: 32,
+        //         fit: BoxFit.fitHeight,
+        //       ),
+        //     ),
+        //     SizedBox(
+        //       height: 24,
+        //     ),
+        //   ],
+        // )
       ),
     );
   }

@@ -98,6 +98,11 @@ class _BussinessCardFrameState extends State<BussinessCardFrame> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        shape:  RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(20),
+          ),
+        ),
         title: Text(
           'Your Business Card',
           maxLines: 2,
@@ -319,7 +324,7 @@ class _BussinessCardFrameState extends State<BussinessCardFrame> {
                         Padding(
                           padding: EdgeInsets.only(bottom: 6.0),
                           child: Text(
-                            date,
+                            date+"",
                             style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 13.0,
@@ -514,7 +519,7 @@ class _BussinessCardFrameState extends State<BussinessCardFrame> {
   shareCustomFile(bool isWhatsApp, String savepath) async {
     if (isWhatsApp) {
       await WhatsappShare.shareFile(
-          text: "Check this amazing Advance video share app at google play https://play.google.com/store/apps/details?id=com.cropvideo.advance_video_share",
+          text: "Check this amazing Biz Card- Photo & Video Status app at google play https://play.google.com/store/apps/details?id=com.cropvideo.advance_video_share",
           filePath: [savepath],
           phone: "-");
     } else {
@@ -522,7 +527,7 @@ class _BussinessCardFrameState extends State<BussinessCardFrame> {
       List<String> imagePaths = [];
       imagePaths.add(savepath);
       Share.shareFiles(imagePaths,
-              text: "Check this amazing Advance video share app at google play " +
+              text: "Check this amazing Biz Card- Photo & Video Status app at google play " +
                   "https://play.google.com/store/apps/details?id=com.cropvideo.advance_video_share",
               subject: 'Share video',
               sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size)

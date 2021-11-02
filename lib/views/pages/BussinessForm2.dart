@@ -131,7 +131,14 @@ class _BussinessForm2State extends State<BussinessForm2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       appBar: AppBar(
+
+        shape:  RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(20),
+          ),
+        ),
         title: Text(
           'Add card details',
           maxLines: 2,

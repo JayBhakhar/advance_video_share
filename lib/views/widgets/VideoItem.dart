@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:video_player/video_player.dart';
 
 
@@ -16,6 +17,7 @@ class _VideoItemState extends State<VideoItem> {
   VideoPlayerController _controller;
   Future<void> _initializeVideoPlayerFuture;
   bool isInitVideo = false;
+  bool isVideoPause = false;
 
   @override
   void initState() {
@@ -85,15 +87,25 @@ class _VideoItemState extends State<VideoItem> {
     //   //       : Container(),
     //   // ),
     // );
-    return isInitVideo? Center(
-      child: GestureDetector(
-        onTap: _playPause,
-        child: AspectRatio(
-          aspectRatio: _controller.value.aspectRatio,
-          child: VideoPlayer(_controller),
-        ),
-      ),
-    ):Center(child: CircularProgressIndicator(backgroundColor: Colors.white,));
+    return Stack(
+      children: [
+        isInitVideo? Center(
+          child: GestureDetector(
+            onTap: _playPause,
+            child: AspectRatio(
+              aspectRatio: _controller.value.aspectRatio,
+              child: VideoPlayer(_controller),
+            ),
+          ),
+        ):Center(child: CircularProgressIndicator(backgroundColor: Colors.white,)),
+        isVideoPause?Center(
+            child: FaIcon(
+              FontAwesomeIcons.solidPlayCircle,
+              color: Colors.black,
+              size: 56.0,
+            )):Container()
+      ],
+    );
   }
 
   @override
@@ -130,8 +142,14 @@ class _VideoItemState extends State<VideoItem> {
   _playPause() {
     if (_controller.value.isPlaying) {
       _controller.pause();
+      setState(() {
+        isVideoPause = true;
+      });
     } else {
       _controller.play();
+      setState(() {
+        isVideoPause = false;
+      });
     }
   }
 }

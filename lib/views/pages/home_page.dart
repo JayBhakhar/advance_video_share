@@ -9,7 +9,9 @@ import 'package:advance_video_share/views/widgets/home_page_drawer.dart';
 import 'package:advance_video_share/views/widgets/main_category_title.dart';
 import 'package:advance_video_share/models/listModel.dart';
 import 'package:downloads_path_provider/downloads_path_provider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 
 class HomePage extends StatefulWidget {
@@ -17,7 +19,7 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final List mainCategoryList = [
     'Make Your Business Card Status',
     'Mix Status Video', // 1/2
@@ -36,6 +38,8 @@ class _HomePageState extends State<HomePage> {
   final List<String> oldSongsVideoUrlList = [];
   final List<String> photoStatusUrlList = [];
   final List<String> createYourOwnVideoUrlList = [];
+  AnimationController _controller;
+  Animation<double> _animation;
 
   // VideoPlayerController _controller;
   String page = "1";
@@ -43,6 +47,15 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp,DeviceOrientation.portraitDown]);
+    _controller = AnimationController(
+        duration: const Duration(milliseconds: 1000), vsync: this, value: 0.1,);
+    _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInCubic,);
+
+    _controller.forward();
+    _controller.repeat(reverse:true);
+
     MixStatusVideo().getSubCategoryListAll(categoryListAll,page).then((ListModel _list) {
       setState(() {
         mixStatusVideoUrlList.addAll(_list.list);
@@ -86,7 +99,13 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text('Everyday Status, BusinessCard, photo & video status'),
+        elevation: 0,
+        shape:  RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(20),
+            ),
+        ),
+        title: Text('Everyday Status, BusinessCard, photo & video status',style: TextStyle(fontSize: 16.0),),
       ),
       drawer: homePageDrawer(context),
       body: SafeArea(
@@ -95,8 +114,19 @@ class _HomePageState extends State<HomePage> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                TextButton(
-                  onPressed: () {
+                // Container(
+                //   height: 15,
+                //   decoration: BoxDecoration(
+                //     color: Color(0xFF8B0000),
+                //     // borderRadius: BorderRadius.vertical(
+                //     //     bottom: Radius.elliptical(
+                //     //         MediaQuery.of(context).size.width, 400.0))
+                //     borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15.0),bottomRight: Radius.circular(10.0))
+                //   ),
+                // ),
+
+                InkWell(
+                  onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -104,7 +134,45 @@ class _HomePageState extends State<HomePage> {
                       ),
                     );
                   },
-                  child: Text('Make Your Business Card Status'),
+                  child: Stack(
+                    fit: StackFit.loose,
+                    children: [
+                      Image.asset(
+                        "assets/photos/sss.gif",
+                        width: MediaQuery.of(context).size.width,
+                        height: 85.0,
+                        fit: BoxFit.fill,
+                      ),
+                      Center(
+                        child: Container(
+                            height: 45,
+                            margin: EdgeInsets.only(
+                              top:20.0,
+                              left: 32.0,
+                              right: 32.0
+                            ),
+                            decoration: BoxDecoration(
+                              color: Color(0xFF8B0000),
+                              shape: BoxShape.rectangle,
+                              borderRadius: BorderRadius.circular(4.0),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.white,
+                                  spreadRadius: 2,
+                                  blurRadius: 5,
+                                  offset: Offset(0, 0), // changes position of shadow
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: Text('Make Your Business Card Status',style: TextStyle(color: Colors.white,  fontFamily: 'YoungSerif',fontSize: 17),),
+                            )),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 12.0,
                 ),
                 MainCategoryTitle(
                   titleText: 'Mix Status Video',
@@ -187,8 +255,13 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     super.dispose();
+    _controller.dispose();
   }
 }
+
+
+
+
 
 Widget horizotalContainer(List<String> videoUrlList, BuildContext context) {
   return SingleChildScrollView(
@@ -204,7 +277,6 @@ Widget horizotalContainer(List<String> videoUrlList, BuildContext context) {
               height: 200,
               width: 140,
               decoration: BoxDecoration(
-
                   color: Colors.white24,
                   borderRadius: BorderRadius.circular(8.0)),
               // child: VideoPlayer(
@@ -233,7 +305,7 @@ Widget horizotalContainer(List<String> videoUrlList, BuildContext context) {
                 context,
                 MaterialPageRoute(
                   builder: (context) =>
-                      PlayVideoLandscape(videoUrl: videoUrlList[index1],videoUrls: videoUrlList),
+                      PlayVideoLandscape(videoUrl: videoUrlList[index1],videoUrls: videoUrlList,position: index1,),
                 ),
               );
             },
@@ -242,6 +314,29 @@ Widget horizotalContainer(List<String> videoUrlList, BuildContext context) {
       }),
     ),
   );
+}
+
+
+class CustomShapeBorder extends ContinuousRectangleBorder {
+  @override
+  Path getOuterPath(Rect rect, {TextDirection textDirection}) {
+
+    final double innerCircleRadius = 0.0;
+
+    Path path = Path();
+    path.lineTo(0, rect.height);
+    path.quadraticBezierTo(rect.width / 2 - (innerCircleRadius / 2) - 30, rect.height + 15, rect.width / 2 - 75, rect.height + 50);
+    path.cubicTo(
+        rect.width / 2 - 40, rect.height + innerCircleRadius - 40,
+        rect.width / 2 + 40, rect.height + innerCircleRadius - 40,
+        rect.width / 2 + 75, rect.height + 50
+    );
+    path.quadraticBezierTo(rect.width / 2 + (innerCircleRadius / 2) + 30, rect.height + 15, rect.width, rect.height);
+    path.lineTo(rect.width, 0.0);
+    path.close();
+
+    return path;
+  }
 }
 
 // NetworkImage(
