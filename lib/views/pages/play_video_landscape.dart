@@ -2,18 +2,16 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:isolate';
 import 'dart:ui';
+import 'package:advance_video_share/consts/constants.dart';
 import 'package:advance_video_share/views/widgets/VideoItem.dart';
 import 'package:dio/dio.dart';
 import 'package:downloads_path_provider/downloads_path_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:photo_view/photo_view.dart';
-
 import 'package:share/share.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:unicorndial/unicorndial.dart';
@@ -25,15 +23,16 @@ class PlayVideoLandscape extends StatefulWidget {
   final String videoUrl;
   final List<String> videoUrls;
   final int position;
+  final String categoryType;
 
-  PlayVideoLandscape({this.videoUrl, this.videoUrls,this.position});
+  PlayVideoLandscape({this.videoUrl, this.videoUrls, this.position,this.categoryType});
 
   @override
   PlayVideoLandscapeState createState() => PlayVideoLandscapeState();
 }
 
 class PlayVideoLandscapeState extends State<PlayVideoLandscape> {
-  String progress1 = '0';
+  double progress1 = 0;
   String downloadUrl = '0';
   String loadingTextVideo = "Downloading video....";
   String loadingTextPhoto = "Downloading photo....";
@@ -44,84 +43,38 @@ class PlayVideoLandscapeState extends State<PlayVideoLandscape> {
   bool isVideoPause = false;
   int currentIndex = 0;
   List<String> videoUrls = [];
-  var childButtons = List<UnicornButton>();
 
   @override
   void initState() {
     super.initState();
     // SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft,DeviceOrientation.landscapeRight]);
-    setState(() {
-      childButtons.add(UnicornButton(
-          hasLabel: true,
-          labelText: "Download",
-          currentButton: FloatingActionButton(
-            heroTag: "download",
-            backgroundColor: Colors.redAccent,
-            mini: true,
-            child: Icon(Icons.download_sharp),
-            onPressed: () {
-              _downloadFile();
-            },
-          )));
-
-      childButtons.add(UnicornButton(
-          hasLabel: true,
-          labelText: "Share",
-          currentButton: FloatingActionButton(
-              onPressed: () {
-                downloadNShare(false);
-              },
-              heroTag: "share",
-              backgroundColor: Colors.redAccent,
-              mini: true,
-              child: Transform(alignment: Alignment.center, transform: Matrix4.rotationY(math.pi), child: Icon(Icons.reply, color: Colors.white, size: 24)))));
-
-      childButtons.add(UnicornButton(
-          hasLabel: true,
-          labelText: "Share to Whatsapp",
-          currentButton: FloatingActionButton(
-        onPressed: () {
-          downloadNShare(true);
-        },
-        heroTag: "wshare",
-        backgroundColor: Colors.redAccent,
-        mini: true,
-        child: Image.asset(
-          'assets/icon/whatsapp.png',
-          width: 24,
-          fit: BoxFit.fitHeight,
-        ),
-      )));
-    });
 
     setState(() {
       videoUrls.addAll(widget.videoUrls);
       if (widget.videoUrl.split("~")[0].endsWith("/")) {
-     //   videoUrls.removeAt(widget.position);
-        videoUrls.insert(0, videoUrls[widget.position]);
+        //   videoUrls.removeAt(widget.position);
+        String remove = videoUrls.removeAt(widget.position);
+        videoUrls.insert(0, remove);
         isVideo = false;
         downloadUrl = videoUrls[currentIndex].split("~")[1];
         isLoading = false;
       } else {
-        downloadUrl = widget.videoUrl.split("~")[0];
+        String remove = videoUrls.removeAt(widget.position);
+        videoUrls.insert(0, remove);
         isVideo = true;
+        downloadUrl = videoUrls[currentIndex].split("~")[0];
+        isLoading = false;
+        // downloadUrl = widget.videoUrl.split("~")[0];
+        // isVideo = true;
       }
     });
-    // if (isVideo) {
-    //   _controller = VideoPlayerController.network(downloadUrl)
-    //     ..initialize().then((_) {
-    //       setState(() {
-    //         isLoading = false;
-    //         _controller.play();
-    //       }); //when your thumbnail will show.
-    //     });
-    // }
     initPath();
     initFlutterDownloader();
     _bindBackgroundIsolate();
   }
 
   Future<String> checkDownloadedList(String getfileName) async {
+
     String getName = "";
     // String _localPath = (await DownloadsPathProvider.downloadsDirectory).path + Platform.pathSeparator + 'AdvanceVideoShare'; // temp comment
     Directory dir = Directory(_sharePath);
@@ -131,11 +84,12 @@ class PlayVideoLandscapeState extends State<PlayVideoLandscape> {
     List<String> filelist = [];
     try {
       _files = dir.listSync(recursive: true, followLinks: false);
-      print("size==="+_files.length.toString());
+      print("size===" + _files.length.toString());
       for (FileSystemEntity entity in _files) {
         String path = entity.path;
         // filelist.add(path);
         List<String> temp = path.split("/");
+        print("temp - "+temp[temp.length - 1]);
         if (temp[temp.length - 1] == getfileName) {
           getName = path;
         }
@@ -193,7 +147,7 @@ class PlayVideoLandscapeState extends State<PlayVideoLandscape> {
           setState(() {
             // Navigator.of(context).pop();
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(isVideo?loadingTextVideo:loadingTextPhoto, style: TextStyle(color: Colors.red, fontSize: 17.0, fontWeight: FontWeight.bold)),
+              content: Text(isVideo ? loadingTextVideo : loadingTextPhoto, style: TextStyle(color: Colors.red, fontSize: 17.0, fontWeight: FontWeight.bold)),
             ));
             _showErrorDialog(id);
           });
@@ -309,8 +263,15 @@ class PlayVideoLandscapeState extends State<PlayVideoLandscape> {
 
   void initPath() async {
     final status = await Permission.storage.request();
+    final status1 = await Permission.manageExternalStorage.request();
     _sharePath = (await (getExternalStorageDirectory())).path;
-    _localPath = (await DownloadsPathProvider.downloadsDirectory).path.replaceAll("Download","").replaceAll("download", "") + /*Platform.pathSeparator + */'AdvanceVideoShare'; // temp comment
+    _localPath = (await DownloadsPathProvider.downloadsDirectory)
+        .path
+        .replaceAll("Download", "")
+        .replaceAll("download", "")
+        .replaceAll("Downloads", "")
+        .replaceAll("downloads", "") + /*Platform.pathSeparator + */ 'AdvanceVideoShare'; // temp comment
+    // _localPath = (await DownloadsPathProvider.downloadsDirectory).path; // temp comment
     print("LOCAL path==" + _localPath);
     final savedDir = new Directory(_localPath);
     _localPath = savedDir.path.toString();
@@ -331,37 +292,16 @@ class PlayVideoLandscapeState extends State<PlayVideoLandscape> {
     if (status.isGranted) {
       // _showLoaderDialog(loadingText);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(isVideo?loadingTextVideo:loadingTextPhoto, style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold)),
+        content: Text(isVideo ? loadingTextVideo : loadingTextPhoto, style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold)),
       ));
       print("Download url==" + downloadUrl);
-      final id = await FlutterDownloader.enqueue(saveInPublicStorage:false,url: downloadUrl, savedDir: _localPath, showNotification: true, openFileFromNotification: true);
+      final id = await FlutterDownloader.enqueue(
+          saveInPublicStorage: false, url: downloadUrl, savedDir: _localPath, showNotification: true, openFileFromNotification: true);
     } else {
       print('No permission');
     }
   }
 
-  // Future<Null> urlFileShare() async {
-  //   final RenderBox box = context.findRenderObject();
-  //   if (Platform.isAndroid) {
-  //     var url = widget.videoUrl.split("~")[0];
-  //     var temp = url.split("/");
-  //     var filename = temp[temp.length-1];
-  //     print("video url=="+url.toString());
-  //     var response = await get(Uri.parse(url));
-  //     final documentDirectory = (await getExternalStorageDirectory()).path + "/AdvanceVideoShare";
-  //     File imgFile = File('$documentDirectory/$filename');
-  //     imgFile.writeAsBytesSync(response.bodyBytes);
-  //
-  //     Share.shareFiles(['$documentDirectory/$filename'],
-  //         subject: 'video share', // app nu name rakhi sakay
-  //         text: 'Hello, check your share files!', //  playstore link with some ads words
-  //         sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
-  //   } else {
-  //     Share.share('Hello, check your share files!',
-  //         subject: 'URL File Share',
-  //         sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
-  //   }
-  // }
 
   Future<void> _showLoaderDialog(String loading) async {
     return showDialog<void>(
@@ -406,13 +346,13 @@ class PlayVideoLandscapeState extends State<PlayVideoLandscape> {
           onReceiveProgress: (rcv, total) async {
             print('received: ${rcv.toStringAsFixed(0)} out of total: ${total.toStringAsFixed(0)}');
             setState(() {
-              progress1 = ((rcv / total) * 100).toStringAsFixed(0);
+              progress1 = (rcv / total) * 100;
             });
-            if (progress1 == '100') {
+            if (progress1 == 100 ) {
               print("Finished------------------");
               //   Navigator.of(context).pop();
               shareCustomFile(isWhatsApp, savePath);
-            } else if (double.parse(progress1) < 100) {}
+            }
           },
           //Received data with List<int>
           options: Options(
@@ -437,15 +377,16 @@ class PlayVideoLandscapeState extends State<PlayVideoLandscape> {
   }
 
   shareCustomFile(bool isWhatsApp, String savepath) async {
+    List<String> imagePaths = [];
+    imagePaths.add(savepath);
     if (isWhatsApp) {
       await WhatsappShare.shareFile(
-          text: "Check this amazing Biz Card- Photo & Video Status app at google play https://play.google.com/store/apps/details?id=com.cropvideo.advance_video_share",
-          filePath: [savepath],
+          text:
+              "Check this amazing Biz Card- Photo & Video Status app at google play https://play.google.com/store/apps/details?id=com.cropvideo.advance_video_share",
+          filePath: imagePaths,
           phone: "-");
     } else {
       final RenderBox box = context.findRenderObject() as RenderBox;
-      List<String> imagePaths = [];
-      imagePaths.add(savepath);
       Share.shareFiles(imagePaths,
               text: "Check this amazing Biz Card- Photo & Video Status app at google play " +
                   "https://play.google.com/store/apps/details?id=com.cropvideo.advance_video_share",
@@ -459,114 +400,248 @@ class PlayVideoLandscapeState extends State<PlayVideoLandscape> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        floatingActionButton: UnicornDialer(
-            backgroundColor: Color.fromRGBO(255, 255, 255, 0.6),
-            parentButtonBackground: Colors.redAccent,
-            orientation: UnicornOrientation.VERTICAL,
-            parentButton: Icon(Icons.add),
-            childButtons: childButtons),
-        backgroundColor: Colors.black,
-        body: isVideo
-            ?
+          floatingActionButton: UnicornDialer(
 
-            VideoItem(downloadUrl, 0)
-            :
-        ListView.builder(
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                itemCount: videoUrls.length,
-                physics: ScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return VisibilityDetector(
-                      key: Key(videoUrls[index]+index.toString()),
-                      onVisibilityChanged: (visibilityInfo) {
-                        var visiblePercentage = visibilityInfo.visibleFraction * 100;
-                        if(visiblePercentage>80.0){
-                          currentIndex = index;
-                          downloadUrl = videoUrls[currentIndex].split("~")[1];
-                          debugPrint(currentIndex.toString()+' visible');
-                        }
-                      },
-                    child: Container(
+              backgroundColor: Color.fromRGBO(255, 255, 255, 0.6),
+              parentButtonBackground: Colors.redAccent,
+              orientation: UnicornOrientation.VERTICAL,
+              parentButton: Icon(Icons.add),
+              childButtons: <UnicornButton>[
+              UnicornButton(
+              hasLabel: true,
+              labelText: "Download",
+              currentButton: FloatingActionButton(
+                heroTag: "download",
+                backgroundColor: Colors.redAccent,
+                mini: true,
+                child: Icon(Icons.download_sharp),
+                onPressed: () {
+                  _downloadFile();
+                },
+              )),
+          UnicornButton(
+              hasLabel: true,
+              labelText: "Share",
+              currentButton: FloatingActionButton(
+                  onPressed: () {
+                    print("presss-----------------");
+                    downloadNShare(false);
+                  },
+                  heroTag: "share",
+                  backgroundColor: Colors.redAccent,
+                  mini: true,
+                  child: Transform(alignment: Alignment.center, transform: Matrix4.rotationY(math.pi), child: Icon(Icons.reply, color: Colors.white, size: 24)))),
+          UnicornButton(
+              hasLabel: true,
+              labelText: "Share to Whatsapp",
+              currentButton: FloatingActionButton(
+                onPressed: () {
+                  downloadNShare(true);
+                },
+                heroTag: "wshare",
+                backgroundColor: Colors.redAccent,
+                mini: true,
+                child: Image.asset(
+                  'assets/icon/whatsapp.png',
+                  width: 24,
+                  fit: BoxFit.fitHeight,
+                ),
+              ))
+              ]),
+          backgroundColor: Colors.black,
+          body: isVideo
+
+              ? PageView(
+            children: List.generate(videoUrls.length, (index) {
+              return
+                VisibilityDetector(
+                  key: Key(videoUrls[index] + index.toString()),
+                  onVisibilityChanged: (visibilityInfo) {
+                    var visiblePercentage = visibilityInfo.visibleFraction * 100;
+                    if (visiblePercentage > 80.0) {
+                      currentIndex = index;
+                      downloadUrl = videoUrls[currentIndex].split("~")[0];
+                      debugPrint(currentIndex.toString() + ' visible');
+                    }
+                  },
+                  child: Container(
                     height: MediaQuery.of(context).size.height,
                     width: MediaQuery.of(context).size.width,
-                      child:
-                      Center(
-                              child:
-                            //   Image.network(
-                            //     widget.videoUrls[index].split("~")[1],
-                            //   fit: BoxFit.fill,
-                            // )
-                              PhotoView(
-                                initialScale: PhotoViewComputedScale.contained,
-                                minScale: PhotoViewComputedScale.contained,
-                                imageProvider: NetworkImage(videoUrls[index].split("~")[1]),
-                              )
-                      ),
-                      // Text("sssss",style: TextStyle(color: Colors.white),)
-                    ),
-                  );
-                },
-              )
-        // Center(
-        //         child: Image.network(
-        //         downloadUrl,
-        //         fit: BoxFit.fill,
-        //       )),
+                    child: Center(
+                        child:
+                        //   Image.network(
+                        //     widget.videoUrls[index].split("~")[1],
+                        //   fit: BoxFit.fill,
+                        // )
+                        VideoItem(videoUrls[index].split("~")[0], 0,widget.categoryType==shortMovieVideo?true:false)),
+                    // Text("sssss",style: TextStyle(color: Colors.white),)
+                  ),
+                );
+              // );
+            }),
+          )
+          // VideoItem(downloadUrl, 0)
+              : PageView(
+                  children: List.generate(videoUrls.length, (index) {
+                    return
+                      VisibilityDetector(
+                      key: Key(videoUrls[index] + index.toString()),
+                      onVisibilityChanged: (visibilityInfo) {
+                        var visiblePercentage = visibilityInfo.visibleFraction * 100;
+                        if (visiblePercentage > 80.0) {
+                          currentIndex = index;
+                          downloadUrl = videoUrls[currentIndex].split("~")[1];
+                          debugPrint(currentIndex.toString() + ' visible');
+                        }
+                      },
+                          child: Container(
+                            height: MediaQuery.of(context).size.height,
+                            width: MediaQuery.of(context).size.width,
+                            child: Center(
+                                child:
+                                    //   Image.network(
+                                    //     widget.videoUrls[index].split("~")[1],
+                                    //   fit: BoxFit.fill,
+                                    // )
+                                    PhotoView(
+                              initialScale: PhotoViewComputedScale.contained,
+                              minScale: PhotoViewComputedScale.contained,
+                              imageProvider: NetworkImage(videoUrls[index].split("~")[1]),
+                            )),
+                            // Text("sssss",style: TextStyle(color: Colors.white),)
+                          ),
+                        );
+                    // );
+                  }),
+                )
 
-        // Column(
-        //   mainAxisAlignment: MainAxisAlignment.end,
-        //   children: [
-        //     InkWell(
-        //       onTap: () {
-        //         _downloadFile();
-        //       },
-        //       child: Icon(
-        //         Icons.download_sharp,
-        //         color: Colors.white,
-        //         size: 40,
-        //       ),
-        //     ),
-        //     SizedBox(
-        //       height: 16,
-        //     ),
-        //     InkWell(
-        //       onTap: () async {
-        //         // urlFileShare();
-        //         downloadNShare(false);
-        //       },
-        //       child: Transform(alignment: Alignment.center, transform: Matrix4.rotationY(math.pi), child: Icon(Icons.reply, color: Colors.white, size: 40)),
-        //     ),
-        //     // SizedBox(
-        //     //   height: 16,
-        //     // ),
-        //     // InkWell(
-        //     //   onTap: () {},
-        //     //   child: Image.asset(
-        //     //   'assets/icon/repost.png',
-        //     //   width: 28,
-        //     //     fit: BoxFit.fitHeight,
-        //     // ),
-        //     // ),
-        //     SizedBox(
-        //       height: 20,
-        //     ),
-        //     InkWell(
-        //       onTap: () {
-        //         downloadNShare(true);
-        //       },
-        //       child: Image.asset(
-        //         'assets/icon/whatsapp.png',
-        //         width: 32,
-        //         fit: BoxFit.fitHeight,
-        //       ),
-        //     ),
-        //     SizedBox(
-        //       height: 24,
-        //     ),
-        //   ],
-        // ),
-      ),
+          // ScrollablePositionedList.builder(
+          //         scrollDirection: Axis.horizontal,
+          //         //shrinkWrap: true,
+          //         itemCount: videoUrls.length,
+          //         itemScrollController: itemScrollController,
+          //         itemPositionsListener: itemPositionsListener,
+          //         reverse: false,
+          //         physics: AlwaysScrollableScrollPhysics(),
+          //
+          //         itemBuilder: (context, index) {
+          //           return
+          //             // VisibilityDetector(
+          //             // key: Key(videoUrls[index] + index.toString()),
+          //             // onVisibilityChanged: (visibilityInfo) {
+          //             //   var visiblePercentage = visibilityInfo.visibleFraction * 100;
+          //             //   if (visiblePercentage > 80.0) {
+          //             //     currentIndex = index;
+          //             //     downloadUrl = videoUrls[currentIndex].split("~")[1];
+          //             //     debugPrint(currentIndex.toString() + ' visible');
+          //             //   }
+          //             // },
+          //             // child:
+          //           GestureDetector(
+          //               onHorizontalDragUpdate: (details) {
+          //                 // Swiping in right direction.
+          //                 if (details.delta.dx > 8) {
+          //                   print("swipe right currentIndex"+currentIndex.toString());
+          //
+          //                   if(currentIndex!=0){
+          //                     currentIndex = currentIndex-1;
+          //                     itemScrollController.scrollTo(index: currentIndex,duration: Duration(milliseconds: 500));
+          //
+          //                   }
+          //                 }
+          //
+          //                 // Swiping in left direction.
+          //                 if (details.delta.dx < -8) {
+          //                   print("swipe left currentIndex"+currentIndex.toString());
+          //                   if(currentIndex<videoUrls.length-1){
+          //                     currentIndex = currentIndex+1;
+          //                     itemScrollController.scrollTo(index: currentIndex,duration: Duration(milliseconds: 500));
+          //
+          //                   }
+          //                 }
+          //               },
+          //               // onLeftSwipe: (){
+          //               //
+          //               // },
+          //               child: Container(
+          //                 height: MediaQuery.of(context).size.height,
+          //                 width: MediaQuery.of(context).size.width,
+          //                 child: Center(
+          //                     child:
+          //                         //   Image.network(
+          //                         //     widget.videoUrls[index].split("~")[1],
+          //                         //   fit: BoxFit.fill,
+          //                         // )
+          //                         PhotoView(
+          //                   initialScale: PhotoViewComputedScale.contained,
+          //                   minScale: PhotoViewComputedScale.contained,
+          //                   imageProvider: NetworkImage(videoUrls[index].split("~")[1]),
+          //                 )),
+          //                 // Text("sssss",style: TextStyle(color: Colors.white),)
+          //               ),
+          //             );
+          //           // );
+          //         },
+          //       )
+          // Center(
+          //         child: Image.network(
+          //         downloadUrl,
+          //         fit: BoxFit.fill,
+          //       )),
+
+          // Column(
+          //   mainAxisAlignment: MainAxisAlignment.end,
+          //   children: [
+          //     InkWell(
+          //       onTap: () {
+          //         _downloadFile();
+          //       },
+          //       child: Icon(
+          //         Icons.download_sharp,
+          //         color: Colors.white,
+          //         size: 40,
+          //       ),
+          //     ),
+          //     SizedBox(
+          //       height: 16,
+          //     ),
+          //     InkWell(
+          //       onTap: () async {
+          //         // urlFileShare();
+          //         downloadNShare(false);
+          //       },
+          //       child: Transform(alignment: Alignment.center, transform: Matrix4.rotationY(math.pi), child: Icon(Icons.reply, color: Colors.white, size: 40)),
+          //     ),
+          //     // SizedBox(
+          //     //   height: 16,
+          //     // ),
+          //     // InkWell(
+          //     //   onTap: () {},
+          //     //   child: Image.asset(
+          //     //   'assets/icon/repost.png',
+          //     //   width: 28,
+          //     //     fit: BoxFit.fitHeight,
+          //     // ),
+          //     // ),
+          //     SizedBox(
+          //       height: 20,
+          //     ),
+          //     InkWell(
+          //       onTap: () {
+          //         downloadNShare(true);
+          //       },
+          //       child: Image.asset(
+          //         'assets/icon/whatsapp.png',
+          //         width: 32,
+          //         fit: BoxFit.fitHeight,
+          //       ),
+          //     ),
+          //     SizedBox(
+          //       height: 24,
+          //     ),
+          //   ],
+          // ),
+          ),
     );
   }
 

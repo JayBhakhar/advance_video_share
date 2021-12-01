@@ -1,11 +1,15 @@
 import 'dart:io';
 
-import 'package:advance_video_share/views/widgets/custom_gridviewbuilder2.dart';
+import 'package:advance_video_share/consts/AdState.dart';
+import 'package:advance_video_share/views/pages/play_video_landscape2.dart';
 import 'package:downloads_path_provider/downloads_path_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:video_player/video_player.dart';
 
 class DownloadedVideoScreen extends StatefulWidget {
-
   DownloadedVideoScreen({Key key}) : super(key: key);
 
   @override
@@ -15,11 +19,37 @@ class DownloadedVideoScreen extends StatefulWidget {
 class _DownloadedVideoScreenState extends State<DownloadedVideoScreen> {
   String categoryIcon = "";
   final List<String> mixStatusVideoAll = [];
+  String adId = "";
+  BannerAd banner;
 
   @override
   void initState() {
     super.initState();
+    _initPreference();
     getCategoryVideoList();
+  }
+
+  _initPreference() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs != null) {
+      setState(() {
+        adId = prefs.getString("bennerId");
+      });
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final adState = Provider.of<AdState>(context);
+    adState.initialization.then((status) {
+      banner = BannerAd(
+        adUnitId: adId,
+        size: AdSize.banner,
+        request: AdRequest(),
+        listener: adState.listener,
+      )..load();
+    });
   }
 
   @override
@@ -27,15 +57,14 @@ class _DownloadedVideoScreenState extends State<DownloadedVideoScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        shape:  RoundedRectangleBorder(
+
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
             bottom: Radius.circular(20),
           ),
         ),
         backgroundColor: Color(0xFF8B0000),
-        title: Text(
-          "Downloads"
-        ),
+        title: Text("Downloads"),
         leading: Padding(
           padding: EdgeInsets.all(8.0),
           child: Image.asset(
@@ -50,17 +79,94 @@ class _DownloadedVideoScreenState extends State<DownloadedVideoScreen> {
           SizedBox(
             height: 8,
           ),
-          Expanded(child: customGridViewBuilder2(mixStatusVideoAll,context))
+          Expanded(
+              child: GridView.count(
+            shrinkWrap: true,
+            physics: ScrollPhysics(),
+            crossAxisCount: 2,
+            childAspectRatio: 0.8,
+            children: List.generate(mixStatusVideoAll.length, (index) {
+              return Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: InkWell(
+                  child: Container(
+                    decoration: BoxDecoration(color: Colors.green, borderRadius: BorderRadius.circular(8.0)),
+                    child: !mixStatusVideoAll[index].endsWith("mp4")
+                        ?
+                            // Image.file(
+                            //     File(mixStatusVideoAll[index]),
+                            //     fit: BoxFit.fill,
+                            //   )
+                    Stack(
+                         fit: StackFit.expand,
+                          children: [
+                            Image.file(
+                                File(mixStatusVideoAll[index]),
+                                fit: BoxFit.fill,
+                              ),
+                            Align(
+                                alignment: Alignment.topRight,
+                                child: InkWell(
+                                    onTap: ()  {
+                                        deleteFile(index);
+                                    },
+                                    child: Icon(Icons.remove_circle, color: Colors.red, size: 36))),
+                          ],
+                        )
+                        :    Stack(
+                      fit: StackFit.expand,
+                          children: [
+                            VideoPlayer(
+                                VideoPlayerController.network(mixStatusVideoAll[index])..initialize(),
+                              ),
+                            Align(
+                                alignment: Alignment.topRight,
+                                child: InkWell(
+                                    onTap: ()  {
+                                        deleteFile(index);
+                                    },
+                                    child: Icon(Icons.remove_circle, color: Colors.red, size: 36))),
+                          ],
+                        ),
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PlayVideoLandscape2(
+                          videoUrl: mixStatusVideoAll[index],
+                          videoUrls: mixStatusVideoAll,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            }),
+          )),
+            (banner != null)
+              ? Container(
+            height: 55,
+            child: AdWidget(
+              // ad: banner,
+              ad: banner,
+            ),
+          )
+              : Container()
         ],
       ),
     );
   }
 
-
   Future<void> getCategoryVideoList() async {
     // String categoryType = "";
     // String _localPath = (await DownloadsPathProvider.downloadsDirectory).path + Platform.pathSeparator + 'AdvanceVideoShare'; // temp comment
-    String _localPath = (await DownloadsPathProvider.downloadsDirectory).path.replaceAll("Download","").replaceAll("download", "") + /*Platform.pathSeparator + */'AdvanceVideoShare'; // temp comment
+    String _localPath = (await DownloadsPathProvider.downloadsDirectory)
+        .path
+        .replaceAll("Download", "")
+        .replaceAll("download", "")
+        .replaceAll("Downloads", "")
+        .replaceAll("downloads", "") + /*Platform.pathSeparator + */ 'AdvanceVideoShare'; // temp comment
     print("LOCAL path==" + _localPath);
     Directory dir = Directory(_localPath);
     String mp3Path = dir.toString();
@@ -80,7 +186,18 @@ class _DownloadedVideoScreenState extends State<DownloadedVideoScreen> {
 
       print(_songs);
       print(_songs.length);
-    }catch(ex){}
+    } catch (ex) {}
+  }
+  Future<int> deleteFile(int index) async {
+    try {
+      final file = await File(mixStatusVideoAll[index]);
+      await file.delete();
+      setState(() {
+        mixStatusVideoAll.removeAt(index);
+      });
+    } catch (e) {
+      return 0;
+    }
   }
 }
 

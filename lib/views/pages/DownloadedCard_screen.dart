@@ -1,9 +1,13 @@
 import 'dart:io';
 
-import 'package:advance_video_share/views/widgets/custom_gridview_card.dart';
-import 'package:advance_video_share/views/widgets/custom_gridviewbuilder2.dart';
+import 'package:advance_video_share/consts/AdState.dart';
+import 'package:advance_video_share/views/pages/play_video_landscape2.dart';
 import 'package:downloads_path_provider/downloads_path_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:video_player/video_player.dart';
 
 class DownloadedCardScreen extends StatefulWidget {
 
@@ -16,11 +20,37 @@ class DownloadedCardScreen extends StatefulWidget {
 class _DownloadedCardScreenState extends State<DownloadedCardScreen> {
   String categoryIcon = "";
   final List<String> mixStatusVideoAll = [];
+  String adId = "";
+  BannerAd banner;
 
   @override
   void initState() {
     super.initState();
+    _initPreference();
     getCategoryVideoList();
+  }
+
+  _initPreference() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs != null) {
+      setState(() {
+        adId = prefs.getString("bennerId");
+      });
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final adState = Provider.of<AdState>(context);
+    adState.initialization.then((status) {
+      banner = BannerAd(
+        adUnitId: adId,
+        size: AdSize.banner,
+        request: AdRequest(),
+        listener: adState.listener,
+      )..load();
+    });
   }
 
   @override
@@ -28,6 +58,7 @@ class _DownloadedCardScreenState extends State<DownloadedCardScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
+
         shape:  RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
             bottom: Radius.circular(20),
@@ -51,7 +82,68 @@ class _DownloadedCardScreenState extends State<DownloadedCardScreen> {
           SizedBox(
             height: 8,
           ),
-          Expanded(child: customGridViewCard(mixStatusVideoAll))
+          Expanded(child: GridView.count(
+              childAspectRatio: 1.2,
+              crossAxisCount: 2,
+              mainAxisSpacing: 16.0,
+              crossAxisSpacing: 8.0,
+              shrinkWrap: true,
+              physics: ScrollPhysics(),
+              children: List.generate(mixStatusVideoAll.length, (index){
+                return Container(
+
+                  height: 150,
+                  width: 150,
+                  child: Stack(
+                    fit: StackFit.loose,
+                    children: [
+                      Align(
+
+                        alignment: Alignment.bottomCenter,
+                        child: InkWell(
+                          child:
+                          Container(
+                            decoration: BoxDecoration(
+                                color: Colors.green,
+                                borderRadius: BorderRadius.circular(8.0)),
+                            child: !mixStatusVideoAll[index].endsWith("mp4")?
+                            Image.file(File(mixStatusVideoAll[index]),   height: 150,
+                              width: 150,fit: BoxFit.fill,):VideoPlayer(
+                              VideoPlayerController.network(mixStatusVideoAll[index])
+                                ..initialize(),
+                            ),
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PlayVideoLandscape2(videoUrl:mixStatusVideoAll[index],videoUrls: mixStatusVideoAll,),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      Align(
+                          alignment: Alignment.topRight,
+                          child: InkWell(
+                              onTap: ()  {
+                                deleteFile(index);
+                              },
+                              child: Icon(Icons.remove_circle, color: Colors.red, size: 36)))
+                    ],
+                  ),
+                );
+              })
+          )),
+          (banner != null)
+              ? Container(
+            height: 55,
+            child: AdWidget(
+              // ad: banner,
+              ad: banner,
+            ),
+          )
+              : Container()
         ],
       ),
     );
@@ -82,7 +174,21 @@ class _DownloadedCardScreenState extends State<DownloadedCardScreen> {
       print(_songs.length);
     }catch(ex){}
   }
+
+  Future<int> deleteFile(int index) async {
+    try {
+      final file = await File(mixStatusVideoAll[index]);
+      await file.delete();
+      setState(() {
+        mixStatusVideoAll.removeAt(index);
+      });
+    } catch (e) {
+      return 0;
+    }
+  }
 }
+
+
 
 class Search extends SearchDelegate {
   @override

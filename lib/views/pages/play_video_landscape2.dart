@@ -125,7 +125,7 @@ class PlayVideoLandscape2State extends State<PlayVideoLandscape2> {
         //           );
         //         },
         //       )
-        VideoItem(downloadUrl,0) : Center(
+        VideoItem(downloadUrl,0,false) : Center(
                 child: Image.file(
                 File(downloadUrl),
                 fit: BoxFit.fill,

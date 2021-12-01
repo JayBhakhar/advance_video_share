@@ -63,10 +63,10 @@ Widget homePageDrawer(BuildContext context) {
               );
             },
           ),
-          ListTile(
-            leading: IconTitle(Icons.policy_outlined),
-            title: TextTitle('Create your own video'),
-          ),
+          // ListTile(
+          //   leading: IconTitle(Icons.policy_outlined),
+          //   title: TextTitle('Create your own video'),
+          // ),
           ListTile(
             leading: IconTitle(Icons.info_outline),
             title: TextTitle('Privacy Policy'),

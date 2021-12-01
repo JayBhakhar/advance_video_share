@@ -1,12 +1,24 @@
-import 'package:advance_video_share/unit_test.dart';
+import 'package:advance_video_share/consts/AdState.dart';
 import 'package:advance_video_share/views/pages/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:provider/provider.dart';
 
-void main() async {
+
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final initFuture = MobileAds.instance.initialize();
+
+  final adState = AdState(initFuture);
   await FlutterDownloader.initialize();
-  runApp(MyApp());
+  runApp(
+    Provider.value(
+      value: adState,
+      builder: (context, child) => MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

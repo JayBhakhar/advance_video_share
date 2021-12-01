@@ -1,10 +1,19 @@
+import 'dart:async';
+import 'dart:math';
+
+import 'package:advance_video_share/consts/AdState.dart';
 import 'package:advance_video_share/consts/constants.dart';
+import 'package:advance_video_share/models/cardModel.dart';
+import 'package:advance_video_share/models/categoryModel.dart';
 import 'package:advance_video_share/services/mixStatusVideo_list.dart';
 import 'package:advance_video_share/views/pages/play_video_landscape.dart';
 import 'package:flutter/material.dart';
 import 'package:advance_video_share/models/listModel.dart';
 import 'package:flutter/services.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class MixStatusVideoScreen extends StatefulWidget {
   String categoryType;
@@ -17,11 +26,13 @@ class MixStatusVideoScreen extends StatefulWidget {
 
 class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
   String categoryIcon = "";
-  final List<String> subcategory = [];
-  final List<String> subcategoryFestive = [];
+  final List<categoryModel> subcategory0 = [];
+  final List<String> subcategoryFestive0 = [];
   int page = 1, total = 0;
   final ScrollController _scrollController = ScrollController(keepScrollOffset: false);
-  final List<String> subcategoryMix = [
+  String insterAd = "";
+
+  final List<String> subcategoryMix0 = [
     'all',
     'god',
     'trending',
@@ -43,7 +54,7 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
     'horror',
   ];
 
-  final List<String> subcategoryKidZone = [
+  final List<String> subcategoryKidZone0 = [
     'all', // 0/5
     'alladin', //6
     'animal', //5
@@ -57,7 +68,7 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
     'tom and jerry', //3
   ];
 
-  final List<String> subcategoryPhotoStatus = [
+  final List<String> subcategoryPhotoStatus0 = [
     'all',
     'god',
     'love',
@@ -73,7 +84,7 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
     'business',
   ];
 
-  final List<String> subcategoryShortVideo = [
+  final List<String> subcategoryShortVideo0 = [
     'all',
     'action',
     'romantic',
@@ -86,17 +97,63 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
     'bgm',
   ];
 
+  final List<categoryModel> subcategoryMix = [];
+  final List<categoryModel> subcategory = [];
+  final List<categoryModel> subcategoryPhotoStatus = [];
+  final List<categoryModel> subcategoryShortVideo = [];
+  final List<categoryModel> subcategoryKidZone = [];
+  final List<categoryModel> subcategoryFestive = [];
+
   final List<String> mixStatusVideoAll = [];
   int subcategoryIndex = 0;
   String subcategoryName = "all";
+  // TODO: Add _interstitialAd
+  InterstitialAd _interstitialAd;
+
+  // TODO: Add _isInterstitialAdReady
+  bool _isInterstitialAdReady = false;
+
+  Timer _timerForInter; // <- Put this line on top of _MyAppState class
 
   @override
   void initState() {
     super.initState();
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp,DeviceOrientation.portraitDown]);
+    _initPreference();
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
     getCategory();
     getCategoryVideoList(page.toString());
+
+  }
+
+  _initPreference() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs != null) {
+      setState(() {
+        insterAd = prefs.getString("instId");
+      });
+      _loadInterstitialAd();
+      // _timerForInter = Timer.periodic(Duration(seconds: 45), (result) {
+      //
+      // });
+    }
+  }
+
+  setCategotyList() {
+    setState(() {
+      for (int i1 = 0; i1 < subcategoryMix0.length; i1++) {
+        subcategoryMix.add(new categoryModel(subcategoryMix0[i1], i1 == 0 ? true : false));
+      }
+      for (int i1 = 0; i1 < subcategoryPhotoStatus0.length; i1++) {
+        subcategoryPhotoStatus.add(new categoryModel(subcategoryPhotoStatus0[i1], i1 == 0 ? true : false));
+      }
+      for (int i1 = 0; i1 < subcategoryShortVideo0.length; i1++) {
+        subcategoryShortVideo.add(new categoryModel(subcategoryShortVideo0[i1], i1 == 0 ? true : false));
+      }
+      for (int i1 = 0; i1 < subcategoryKidZone0.length; i1++) {
+        subcategoryKidZone.add(new categoryModel(subcategoryKidZone0[i1], i1 == 0 ? true : false));
+      }
+    });
   }
 
   @override
@@ -104,13 +161,16 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        shape:  RoundedRectangleBorder(
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
             bottom: Radius.circular(20),
           ),
         ),
         backgroundColor: Color(0xFF8B0000),
-        title: Text("Biz Card- Photo & Video Status",style: TextStyle(fontSize: 16.0),),
+        title: Text(
+          "Biz Card - Photo & Video Status",
+          style: TextStyle(fontSize: 16.0),
+        ),
         // TextField(
         //   onTap: () {
         //     showSearch(
@@ -158,9 +218,15 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
                 return InkWell(
                   onTap: () {
                     setState(() {
-                      subcategoryName = subcategory[index];
+                      subcategoryName = subcategory[index].name;
                       subcategoryIndex = index;
                       page = 1;
+                      for (int i = 0; i < subcategory.length; i++) {
+                        if (i == index)
+                          subcategory[i].isSelect = true;
+                        else
+                          subcategory[i].isSelect = false;
+                      }
                       getCategoryVideoList(page.toString());
                     });
                   },
@@ -170,25 +236,39 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
                       // height: subcategoryConatainerHeight,
                       // width: subcategoryConatainerWidth,
                       // color: Colors.amberAccent,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            child: Image.asset(
-                              '$categoryIcon${subcategory[index]}.png',
-                              height: subcategoryImageHeight,
-                              fit: BoxFit.fitWidth,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.rectangle,
+                        borderRadius: BorderRadius.circular(8.0),
+                        color: subcategory[index].isSelect ? Colors.white24 : Colors.transparent,
+                        border: Border.all(
+                          width: subcategory[index].isSelect ? 1.2 : 0.0,
+                          color: subcategory[index].isSelect ? Colors.white : Colors.transparent,
+                        ),
+                      ),
+                      child: Padding(
+                        padding: subcategory[index].isSelect
+                            ? EdgeInsets.only(left: 10.0, right: 10.0, top: 4.0, bottom: 4.0)
+                            : EdgeInsets.only(top: 4.0, bottom: 4.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              child: Image.asset(
+                                '$categoryIcon${subcategory[index].name}.png',
+                                height: subcategoryImageHeight,
+                                fit: BoxFit.fitWidth,
+                              ),
                             ),
-                          ),
-                          SizedBox(
-                            height: 6.0,
-                          ),
-                          Text(
-                            subcategory[index],
-                            style: subcategoryTextStyle,
-                            maxLines: 2,
-                          ),
-                        ],
+                            SizedBox(
+                              height: 6.0,
+                            ),
+                            Text(
+                              subcategory[index].name,
+                              style: subcategoryTextStyle,
+                              maxLines: 2,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -205,204 +285,29 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
     );
   }
 
-  // void getCategoryVideoList(String page) {
-  //   String categoryType = "";
-  //   if (widget.categoryType == mixStatusVideo) {
-  //     switch (subcategoryIndex) {
-  //       case 0:
-  //         categoryType = categoryListAll;
-  //         break;
-  //       case 1:
-  //         categoryType = actionCategory;
-  //         break;
-  //       case 2:
-  //         categoryType = bgmCategory;
-  //         break;
-  //       case 3:
-  //         categoryType = bikeLoverCategory;
-  //         break;
-  //       case 4:
-  //         categoryType = carLoverCategory;
-  //         break;
-  //       case 5:
-  //         categoryType = comedyCategory;
-  //         break;
-  //       case 6:
-  //         categoryType = danceCategory;
-  //         break;
-  //       case 7:
-  //         categoryType = festivalCategory;
-  //         break;
-  //       case 8:
-  //         categoryType = garbaCategory;
-  //         break;
-  //       case 9:
-  //         categoryType = godCategory;
-  //         break;
-  //       case 10:
-  //         categoryType = horrorCategory;
-  //         break;
-  //       case 11:
-  //         categoryType = loveCategory;
-  //         break;
-  //       case 12:
-  //         categoryType = motherCategory;
-  //         break;
-  //       case 13:
-  //         categoryType = natureCategory;
-  //         break;
-  //       case 14:
-  //         categoryType = roadTripCategory;
-  //         break;
-  //       case 15:
-  //         categoryType = romanticCategory;
-  //         break;
-  //       case 16:
-  //         categoryType = sadCategory;
-  //         break;
-  //       case 17:
-  //         categoryType = sportCategory;
-  //         break;
-  //       case 18:
-  //         categoryType = trendingCategory;
-  //         break;
-  //     }
-  //   } else if (widget.categoryType == kidsZoneVideo) {
-  //     switch (subcategoryIndex) {
-  //       case 0:
-  //         categoryType = kidZoneMoviesAll;
-  //         break;
-  //       case 1:
-  //         categoryType = kidZoneMoviesAdin;
-  //         break;
-  //       case 2:
-  //         categoryType = kidZoneMoviesAnimal;
-  //         break;
-  //       case 3:
-  //         categoryType = kidZoneMoviesChotabhim;
-  //         break;
-  //       case 4:
-  //         categoryType = kidZoneMoviesDuckTales;
-  //         break;
-  //       case 5:
-  //         categoryType = kidZoneMoviesJungleBook;
-  //         break;
-  //       case 6:
-  //         categoryType = kidZoneMoviesJurassicPark;
-  //         break;
-  //       case 7:
-  //         categoryType = kidZoneMoviesMotuPatlu;
-  //         break;
-  //       case 8:
-  //         categoryType = kidZoneMoviesMrBean;
-  //         break;
-  //       case 9:
-  //         categoryType = kidZoneMoviesTalkingTom;
-  //         break;
-  //       case 10:
-  //         categoryType = kidZoneMoviesTomAndJerry;
-  //         break;
-  //     }
-  //   } else if (widget.categoryType == shortMovieVideo) {
-  //     switch (subcategoryIndex) {
-  //       case 0:
-  //         categoryType = shortMoviesAll;
-  //         break;
-  //       case 1:
-  //         categoryType = shortMovieActionCategory;
-  //         break;
-  //       case 2:
-  //         categoryType = shortMovieBgmCategory;
-  //         break;
-  //       case 3:
-  //         categoryType = shortMovieCartoonCategory;
-  //         break;
-  //       case 4:
-  //         categoryType = shortMovieComedyCategory;
-  //         break;
-  //       case 5:
-  //         categoryType = shortMovieDanceCategory;
-  //         break;
-  //       case 6:
-  //         categoryType = shortMovieHorrorCategory;
-  //         break;
-  //       case 7:
-  //         categoryType = shortMovieRomanticCategory;
-  //         break;
-  //       case 8:
-  //         categoryType = shortMovieSadCategory;
-  //         break;
-  //       case 9:
-  //         categoryType = shortMovieTrendingCategory;
-  //         break;
-  //     }
-  //   } else if (widget.categoryType == festiveVideo) {
-  //     switch (subcategoryIndex) {
-  //       case 0:
-  //         categoryType = festiveMoviesAll;
-  //         break;
-  //     }
-  //   } else if (widget.categoryType == oldSongsVideo) {
-  //     switch (subcategoryIndex) {
-  //       case 0:
-  //         categoryType = OldSongMoviesAll;
-  //         break;
-  //     }
-  //   } else if (widget.categoryType == photoStatusVideo) {
-  //     switch (subcategoryIndex) {
-  //       case 0:
-  //         categoryType = photoStatusAll;
-  //         break;
-  //       case 1:
-  //         categoryType = photoStatusBusiness;
-  //         break;
-  //       case 2:
-  //         categoryType = photoStatusFestival;
-  //         break;
-  //       case 3:
-  //         categoryType = photoStatusFriendship;
-  //         break;
-  //       case 4:
-  //         categoryType = photoStatusGod;
-  //         break;
-  //       case 5:
-  //         categoryType = photoStatusLove;
-  //         break;
-  //       case 6:
-  //         categoryType = photoStatusMix;
-  //         break;
-  //       case 7:
-  //         categoryType = photoStatusMother;
-  //         break;
-  //       case 8:
-  //         categoryType = photoStatusMotivation;
-  //         break;
-  //       case 9:
-  //         categoryType = photoStatusNavratri;
-  //         break;
-  //       case 10:
-  //         categoryType = photoStatusRomantic;
-  //         break;
-  //       case 11:
-  //         categoryType = photoStatusSad;
-  //         break;
-  //       case 12:
-  //         categoryType = photoStatusShayri;
-  //         break;
-  //     }
-  //   }
-  //
-  //   MixStatusVideo().getSubCategoryListAll(categoryType, page).then((ListModel _list) {
-  //     setState(() {
-  //       if (page == "1"){
-  //         _scrollController.jumpTo(0.0);
-  //         mixStatusVideoAll.clear();
-  //       }
-  //       mixStatusVideoAll.addAll(_list.list);
-  //       total = _list.total;
-  //     });
-  //   });
-  // }
+  void _loadInterstitialAd() {
+    InterstitialAd.load(
+      adUnitId: insterAd,
+      request: AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          this._interstitialAd = ad;
+
+          ad.fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (ad) {
+              _isInterstitialAdReady = false;
+            },
+          );
+          _isInterstitialAdReady = true;
+          _interstitialAd?.show();
+        },
+        onAdFailedToLoad: (err) {
+          print('Failed to load an interstitial ad: ${err.message}');
+          _isInterstitialAdReady = false;
+        },
+      ),
+    );
+  }
 
   void getCategoryVideoList(String page) {
     String categoryType = "";
@@ -596,8 +501,8 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
         if (page == "1") {
           mixStatusVideoAll.clear();
         }
-        mixStatusVideoAll.addAll(_list.list);
-        if(page == ""){
+        mixStatusVideoAll.addAll(getRandomList(_list.list));
+        if (page == "") {
           _scrollController.jumpTo(0.0);
         }
         total = _list.total;
@@ -605,7 +510,23 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
     });
   }
 
+  List<String> getRandomList(List<String> list) {
+    final random = new Random();
+    var i1 = random.nextInt(list.length - 1);
+    String listModel1 = list.removeAt(i1);
+    var i2 = random.nextInt(list.length - 1);
+    String listModel2 = list.removeAt(i2);
+    var i3 = random.nextInt(list.length - 1);
+    String listModel3 = list.removeAt(i3);
+
+    list.insert(0, listModel1);
+    if (list.length > 0) list.insert(1, listModel2);
+    if (list.length > 1) list.insert(2, listModel3);
+    return list;
+  }
+
   void getCategory() {
+    setCategotyList();
     subcategory.clear();
     switch (widget.categoryType) {
       case mixStatusVideo:
@@ -656,106 +577,106 @@ class _MixStatusVideoScreenState extends State<MixStatusVideoScreen> {
           print("onEndOfPage  total=" + total.toString());
           mixStatusVideoAll.length < total ? getCategoryVideoList((page = page + 1).toString()) : () {};
         },
-        child: widget.categoryType == shortMovieVideo?ListView.builder(
-            shrinkWrap: true,
-            physics: AlwaysScrollableScrollPhysics(),
-            controller: _scrollController,
-            itemCount: mixStatusVideoAll.length,
-            itemBuilder: (BuildContext context, index) {
-              return Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: InkWell(
-                  child: Container(
-                   height: 250,
-                    decoration: BoxDecoration(
-                        // image: new DecorationImage(fit: BoxFit.cover, image: new NetworkImage(mixStatusVideoAll[index].split("~")[1])),
-                        // image: new DecorationImage(fit: BoxFit.cover, image: new NetworkImage(mixStatusVideoAll[index].split("~")[1])),
-                        color: Colors.white24,
-                        borderRadius: BorderRadius.circular(8.0)),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: Image.network(
-                        mixStatusVideoAll[index].split("~")[1],
-                        fit: BoxFit.fill,
-                        loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Center(
-                            child: CircularProgressIndicator(
-                              backgroundColor: Colors.white,
-                              // value: loadingProgress.expectedTotalBytes != null ?
-                              // loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
-                              //     : null,
+        child: widget.categoryType == shortMovieVideo
+            ? ListView.builder(
+                shrinkWrap: true,
+                physics: AlwaysScrollableScrollPhysics(),
+                controller: _scrollController,
+                itemCount: mixStatusVideoAll.length,
+                itemBuilder: (BuildContext context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: InkWell(
+                      child: Container(
+                        height: 250,
+                        decoration: BoxDecoration(
+                            // image: new DecorationImage(fit: BoxFit.cover, image: new NetworkImage(mixStatusVideoAll[index].split("~")[1])),
+                            // image: new DecorationImage(fit: BoxFit.cover, image: new NetworkImage(mixStatusVideoAll[index].split("~")[1])),
+                            color: Colors.white24,
+                            borderRadius: BorderRadius.circular(8.0)),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.network(
+                            mixStatusVideoAll[index].split("~")[1],
+                            fit: BoxFit.fill,
+                            loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  backgroundColor: Colors.white,
+                                  // value: loadingProgress.expectedTotalBytes != null ?
+                                  // loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
+                                  //     : null,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PlayVideoLandscape(
+                                videoUrl: mixStatusVideoAll[index], videoUrls: mixStatusVideoAll, position: index, categoryType: widget.categoryType),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                })
+            : GridView.count(
+                shrinkWrap: true,
+                crossAxisCount: 2,
+                childAspectRatio: 0.8,
+                physics: AlwaysScrollableScrollPhysics(),
+                controller: _scrollController,
+                children: List.generate(mixStatusVideoAll.length, (index) {
+                    return Padding(
+                      padding: EdgeInsets.all(4.0),
+                      child: InkWell(
+                        child: Container(
+                          decoration: BoxDecoration(
+                              // image: new DecorationImage(fit: BoxFit.cover, image: new NetworkImage(mixStatusVideoAll[index].split("~")[1])),
+                              // image: new DecorationImage(fit: BoxFit.cover, image: new NetworkImage(mixStatusVideoAll[index].split("~")[1])),
+                              color: Colors.white24,
+                              borderRadius: BorderRadius.circular(8.0)),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: Image.network(
+                              mixStatusVideoAll[index].split("~")[1],
+                              fit: BoxFit.fill,
+                              loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    backgroundColor: Colors.white,
+                                    // value: loadingProgress.expectedTotalBytes != null ?
+                                    // loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
+                                    //     : null,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PlayVideoLandscape(
+                                videoUrl: mixStatusVideoAll[index],
+                                videoUrls: mixStatusVideoAll,
+                                position: index,
+                                categoryType: widget.categoryType,
+                              ),
                             ),
                           );
                         },
                       ),
-                    ),
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PlayVideoLandscape(
-                          videoUrl: mixStatusVideoAll[index],
-                          videoUrls: mixStatusVideoAll,
-                          position: index,
-                        ),
-                      ),
                     );
-                  },
-                ),
-              );
-            }):GridView.count(
-            shrinkWrap: true,
-            crossAxisCount: 2,
-            childAspectRatio: 0.8,
-            physics: AlwaysScrollableScrollPhysics(),
-            controller: _scrollController,
-            children: List.generate(mixStatusVideoAll.length, (index) {
-              return Padding(
-                padding:  EdgeInsets.all(4.0),
-                child: InkWell(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      // image: new DecorationImage(fit: BoxFit.cover, image: new NetworkImage(mixStatusVideoAll[index].split("~")[1])),
-                      // image: new DecorationImage(fit: BoxFit.cover, image: new NetworkImage(mixStatusVideoAll[index].split("~")[1])),
-                        color: Colors.white24,
-                        borderRadius: BorderRadius.circular(8.0)),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: Image.network(
-                        mixStatusVideoAll[index].split("~")[1],
-                        fit: BoxFit.fill,
-                        loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Center(
-                            child: CircularProgressIndicator(
-                              backgroundColor: Colors.white,
-                              // value: loadingProgress.expectedTotalBytes != null ?
-                              // loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
-                              //     : null,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PlayVideoLandscape(
-                          videoUrl: mixStatusVideoAll[index],
-                          videoUrls: mixStatusVideoAll,
-                          position: index,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              );
-            }),
-            ),
+                }),
+              ),
       ),
     );
   }

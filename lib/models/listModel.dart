@@ -8,8 +8,4 @@ class ListModel {
     this.total,
   );
 
-
-
-
-
 }

@@ -83,7 +83,7 @@ class _BussinessForm2State extends State<BussinessForm2> {
     //   }
     // }
     Utility.getImageFromPreferences().then((img) {
-      if (null == img) {
+      if (null == img || img.isEmpty) {
         return;
       }
       setState(() {
@@ -131,10 +131,9 @@ class _BussinessForm2State extends State<BussinessForm2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       appBar: AppBar(
-
-        shape:  RoundedRectangleBorder(
+        backgroundColor: Color(0xFF8B0000),
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
             bottom: Radius.circular(20),
           ),
@@ -195,7 +194,8 @@ class _BussinessForm2State extends State<BussinessForm2> {
                               Align(
                                   alignment: Alignment.topRight,
                                   child: InkWell(
-                                      onTap: _logo, child: CircleAvatar(backgroundColor: Colors.green, child: Icon(Icons.edit, color: Colors.white, size: 25))))
+                                      onTap: _showChooseDialog,
+                                      child: CircleAvatar(backgroundColor: Colors.green, child: Icon(Icons.edit, color: Colors.white, size: 25))))
                             ],
                           ),
                         )
@@ -316,6 +316,51 @@ class _BussinessForm2State extends State<BussinessForm2> {
           return null;
         },
       ),
+    );
+  }
+
+  Future<void> _showChooseDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Edit Image', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 18)),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                InkWell(
+                    onTap: (){
+                      Navigator.of(context).pop();
+                      _logo();
+                    },
+                    child: Text(
+                      "Select Other Image",
+                      style: TextStyle(fontFamily: 'Source Sans Pro', fontWeight: FontWeight.bold, color: Colors.blueAccent, fontSize: 16),
+                    )),
+                SizedBox(
+                  height: 16.0,
+                ),
+                InkWell(
+                  onTap: (){
+                    setState(() {
+                      logoFile = null;
+                      imageFromPreferences = null;
+                      prefs.setString('logo', "");
+                      Navigator.of(context).pop();
+                    });
+
+                  },
+                  child: Text(
+                    "Delete Image",
+                    style: TextStyle(fontFamily: 'Source Sans Pro', fontWeight: FontWeight.bold, color: Colors.red, fontSize: 16),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
