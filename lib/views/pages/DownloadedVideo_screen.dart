@@ -162,11 +162,11 @@ class _DownloadedVideoScreenState extends State<DownloadedVideoScreen> {
     // String categoryType = "";
     // String _localPath = (await DownloadsPathProvider.downloadsDirectory).path + Platform.pathSeparator + 'AdvanceVideoShare'; // temp comment
     String _localPath = (await DownloadsPathProvider.downloadsDirectory)
-        .path
-        .replaceAll("Download", "")
-        .replaceAll("download", "")
-        .replaceAll("Downloads", "")
-        .replaceAll("downloads", "") + /*Platform.pathSeparator + */ 'AdvanceVideoShare'; // temp comment
+        .path+ Platform.pathSeparator +  'AdvanceVideoShare';
+        // .replaceAll("Download", "")
+        // .replaceAll("download", "")
+        // .replaceAll("Downloads", "")
+        // .replaceAll("downloads", "") + /*Platform.pathSeparator + */ 'AdvanceVideoShare'; // temp comment
     print("LOCAL path==" + _localPath);
     Directory dir = Directory(_localPath);
     String mp3Path = dir.toString();

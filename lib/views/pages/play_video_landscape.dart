@@ -266,11 +266,11 @@ class PlayVideoLandscapeState extends State<PlayVideoLandscape> {
     final status1 = await Permission.manageExternalStorage.request();
     _sharePath = (await (getExternalStorageDirectory())).path;
     _localPath = (await DownloadsPathProvider.downloadsDirectory)
-        .path
-        .replaceAll("Download", "")
-        .replaceAll("download", "")
-        .replaceAll("Downloads", "")
-        .replaceAll("downloads", "") + /*Platform.pathSeparator + */ 'AdvanceVideoShare'; // temp comment
+        .path+ Platform.pathSeparator +  'AdvanceVideoShare';
+        // .replaceAll("Download", "")
+        // .replaceAll("download", "")
+        // .replaceAll("Downloads", "")
+        // .replaceAll("downloads", "") + /*Platform.pathSeparator + */ 'AdvanceVideoShare'; // temp comment
     // _localPath = (await DownloadsPathProvider.downloadsDirectory).path; // temp comment
     print("LOCAL path==" + _localPath);
     final savedDir = new Directory(_localPath);

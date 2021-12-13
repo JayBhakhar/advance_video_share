@@ -55,8 +55,11 @@ dependencies:
   #  flutter_downloader:
 #    git:
 #      url: git://github.com/SwatiBhakhar/flutter_downloader.git
+  flutter_downloader:
+    git:
+      url: git://github.com/SwatiElegant/flutter_downloader.git
 
-  flutter_downloader: ^1.7.1
+#  flutter_downloader: ^1.7.1
   downloads_path_provider:
     git:
       url: git://github.com/SwatiBhakhar/downloads_path_provider.git
