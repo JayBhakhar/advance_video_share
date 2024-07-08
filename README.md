@@ -1,16 +1,9 @@
-# advance_video_share
+# Advance Video Share
 
-A new Flutter application.
+The Advance Video Share app is a mobile application developed using Flutter. It provides users with a platform to share and manage videos seamlessly across devices.
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Video Sharing Functionality:
+       Users can upload, view, and share videos easily. The app supports various video formats and ensures smooth playback and sharing options.
+  
+- Backend Integration:
+       Although the repository primarily focuses on the Flutter frontend, it is designed to integrate with backend services for functionalities like video storage, user authentication, and data management.
